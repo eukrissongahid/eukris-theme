@@ -1,0 +1,23 @@
+<div class='w-full max-w-[300px] min-w-[260px] px-3 py-6'>
+  <div class='flex h-full flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg'>
+    <div class='relative block h-60 w-full overflow-hidden border-b border-gray-300 bg-gray-50'>
+      <div class='flex h-full w-full items-center justify-center text-gray-300'>
+        {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+      </div>
+    </div>
+
+    <div class='flex min-h-[135px] flex-grow flex-col p-4'>
+      <span class='line-clamp-2 text-lg font-semibold text-gray-300 uppercase'>
+        {{ 'collection-card-placeholder.title' | t }}
+      </span>
+
+      <span class='mt-1 line-clamp-3 flex-grow text-xs font-light text-gray-300'>
+        {{ 'collection-card-placeholder.description' | t }}
+      </span>
+
+      <p class='text-lg font-bold text-gray-400'>
+        {{ 'collection-card-placeholder.product_count' | t }}
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<footer class='bg-gray-900 shadow-sm'>
+  <div class='mx-auto w-full max-w-screen-xl p-4 md:py-8'>
+    <div class='items-center sm:flex sm:justify-between'>
+      <a
+        href='{{ section.settings.logo_link }}'
+        class='mb-4 flex items-center space-x-3 sm:mb-0 rtl:space-x-reverse'
+      >
+        {% if section.settings.logo != blank %}
+          <img src='{{ section.settings.logo | img_url: 'medium' }}' class='h-8' alt='Logo'>
+        {% endif %}
+        <span class='self-center text-2xl font-semibold whitespace-nowrap dark:text-white'>
+          {{ section.settings.footer_logo_text }}
+        </span>
+      </a>
+
+      <ul class='mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400'>
+        {% for link in section.blocks %}
+          <li>
+            <a href='{{ link.settings.url }}' class='me-4 hover:underline md:me-6'>
+              {{ link.settings.label }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <hr class='my-6 border-gray-200 sm:mx-auto lg:my-8 dark:border-gray-700'>
+    <span class='block text-center text-sm text-gray-500 dark:text-gray-400'>
+      © {{ 'now' | date: '%Y' }}
+      <a href='{{ section.settings.logo_link }}' class='hover:underline'>
+        {{ section.settings.copyright_name }}
+      </a>
+      {{- 'labels.alright_reserved_sufix' | t }}
+    </span>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Custom Footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Footer logo"
+    },
+    {
+      "type": "text",
+      "id": "footer_logo_text",
+      "label": "Footer logo text",
+      "default": "YourBrand"
+    },
+    {
+      "type": "url",
+      "id": "logo_link",
+      "label": "Logo link",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "copyright_name",
+      "label": "Copyright name",
+      "default": "YourBrand™"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Footer Link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Link label",
+          "default": "About"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link URL",
+          "default": "/"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "category": "Footer",
+      "blocks": [
+        {
+          "type": "link",
+          "settings": {
+            "label": "About",
+            "url": "/about"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Privacy Policy",
+            "url": "/policies/privacy-policy"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Licensing",
+            "url": "/pages/licensing"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Contact",
+            "url": "/contact"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

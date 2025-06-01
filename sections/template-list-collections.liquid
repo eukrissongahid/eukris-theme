@@ -1,0 +1,42 @@
+<div class='my-8 flex flex-col items-center'>
+  <h1 class='text-3xl font-medium'>{{ section.settings.title }}</h1>
+
+  <div class='mx-auto my-3 max-w-6xl'>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+      {% assign featured = section.settings.all_collections %}
+      {% if featured != blank %}
+        {% for collection in featured %}
+          {% render 'collection-card', collection_collection: collection %}
+        {% endfor %}
+      {% else %}
+        {% for collection in collections %}
+          {% render 'collection-card', collection_collection: collection %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "All Collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "All Collections",
+      "label": "Title"
+    },
+    {
+      "type": "collection_list",
+      "id": "all_collections",
+      "label": "Collections (optional)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "All Collections"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,266 @@
+<div class='mx-auto max-w-6xl p-6'>
+  <div class='flex flex-col gap-8 md:flex-row'>
+    <!-- Gallery Section -->
+    <div class='flex max-h-[500px] flex-col gap-4 md:max-h-96 md:w-4/6 md:flex-row'>
+      <!-- Main Image -->
+      <div class='h-[350px] w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm md:h-full md:w-3/4'>
+        <img
+          id='mainImage'
+          src='{% assign first_image = product.media | where: 'media_type', 'image' | first %}{{ first_image | image_url: width: 800 }}'
+          alt='{% if first_image %}{{ first_image.alt | escape }}{% else %}Product Image{% endif %}'
+          class='h-full w-full object-cover'
+        >
+      </div>
+
+      <!-- Thumbnails -->
+      <div class='w-full md:w-[130px]'>
+        <div
+          class='flex h-full w-full gap-6.5 overflow-x-auto scroll-smooth pt-2 md:flex-col md:overflow-x-hidden md:overflow-y-auto md:pt-0'
+          style='-webkit-overflow-scrolling: touch;'
+        >
+          {% for media in product.media %}
+            {% if media.media_type == 'image' %}
+              <div class='thumb w-[100px] flex-none cursor-pointer rounded-md border border-gray-200 shadow-sm {% if forloop.first %}active{% endif %}'>
+                <img
+                  src='{{ media | image_url: width: 150 }}'
+                  alt='{{ media.alt | escape }}'
+                  data-large='{{ media | image_url: width: 800 }}'
+                  data-media-id='{{ media.id }}'
+                  class='block h-[100px] w-[100px] rounded-md object-cover'
+                >
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Vertical Divider -->
+    <div class='mx-2 hidden w-px border border-orange-400 md:block'></div>
+
+    <!-- Product Info Section -->
+    <div class='space-y-6 rounded-md bg-gray-100 p-4 md:w-2/6'>
+      <h1 class='text-2xl font-semibold text-orange-700'>{{ product.title }}</h1>
+
+      <product-variant-selector
+        id='variantSelector'
+        variants='{{ product.variants | json | escape }}'
+        options='{{ product.options | json | escape }}'
+      ></product-variant-selector>
+
+      <!-- Action Buttons -->
+      <div class='flex flex-col gap-3 sm:flex-row'>
+        <button class='cursor-pointer rounded bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600'>
+          {{ 'buttons.add_to_cart' | t }}
+        </button>
+        <button class='cursor-pointer rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-900'>
+          {{ 'buttons.buy_now' | t }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Thumbnail click handler: update main image and active thumbnail class
+    document.querySelectorAll('.thumb').forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        document.querySelectorAll('.thumb').forEach((t) => t.classList.remove('active'));
+        thumb.classList.add('active');
+        const mainImage = document.getElementById('mainImage');
+        const img = thumb.querySelector('img');
+        mainImage.src = img.dataset.large;
+        mainImage.alt = img.alt;
+      });
+    });
+
+    const variantSelector = document.getElementById('variantSelector');
+    let selectedVariantId = null;
+    let selectedQuantity = 1;
+
+    variantSelector.addEventListener('variant-change', (e) => {
+      selectedVariantId = e.detail.variantId;
+      selectedQuantity = e.detail.quantity;
+
+      console.log('variant-change event fired on', e.detail.variantId);
+
+      // Get the variant object from the variantId
+      const variant = variantSelector.variants.find((v) => v.id === selectedVariantId);
+
+      if (variant && variant.featured_media && variant.featured_media.id) {
+        const targetMediaId = variant.featured_media.id;
+
+        // Find the matching thumbnail
+        const matchingThumb = document.querySelector(`img[data-media-id="${targetMediaId}"]`);
+
+        if (matchingThumb) {
+          const mainImage = document.getElementById('mainImage');
+          mainImage.src = matchingThumb.dataset.large;
+          mainImage.alt = matchingThumb.alt;
+
+          // Update active thumbnail styling
+          document.querySelectorAll('.thumb').forEach((t) => t.classList.remove('active'));
+          matchingThumb.closest('.thumb').classList.add('active');
+        }
+      }
+    });
+
+    // Initialize variant selector price and selected variant on load
+    if (variantSelector && typeof variantSelector.updateSelectedVariantAndPrice === 'function') {
+      variantSelector.updateSelectedVariantAndPrice();
+    }
+
+    // Add to Cart button handler
+    document.querySelector('button.bg-orange-500').addEventListener('click', async () => {
+      if (!selectedVariantId) {
+        showToast({ type: 'danger', message: 'Please select a valid variant.' });
+        return;
+      }
+      if (selectedQuantity <= 0) {
+        showToast({ type: 'danger', message: 'Please add a quantity.' });
+        return;
+      }
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity })
+        });
+        if (response.ok) {
+          showToast({ type: 'success', message: 'Added to cart!' });
+          document.querySelector('cart-icon')?.update();
+        } else {
+          const error = await response.json();
+          showToast({ type: 'danger', message: `Error: ${error.description}` });
+        }
+      } catch (err) {
+        showToast({ type: 'danger', message: 'An error occurred while adding to cart.' });
+      }
+    });
+
+    // Buy Now button handler
+    document.querySelector('button.bg-black').addEventListener('click', async () => {
+      if (!selectedVariantId) {
+        alert('Please select a variant.');
+        return;
+      }
+      try {
+        await fetch('/cart/clear.js', { method: 'POST' });
+        await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity })
+        });
+        document.querySelector('cart-icon')?.update();
+        window.location.href = '/checkout';
+      } catch (err) {
+        showToast({ type: 'danger', message: 'An error occurred during checkout!' });
+      }
+    });
+  });
+</script>
+
+<script>
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   const mainImage = document.getElementById('mainImage');
+  //   const variantSelector = document.getElementById('variantSelector');
+  //   const addToCartBtn = document.querySelector('button.bg-orange-500');
+  //   const buyNowBtn = document.querySelector('button.bg-black');
+  //   let selectedVariantId = null;
+  //   let selectedQuantity = 1;
+
+  //   if (!mainImage || !variantSelector) {
+  //     console.warn('Essential elements missing');
+  //     return;
+  //   }
+
+  //   function updateMainImageAndActiveThumbnail(imgElement) {
+  //     if (!imgElement) return;
+  //     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  //     const thumb = imgElement.closest('.thumb');
+  //     if (thumb) thumb.classList.add('active');
+  //     mainImage.src = imgElement.dataset.large || '';
+  //     mainImage.alt = imgElement.alt || '';
+  //   }
+
+  //   // Thumbnail click handler
+  //   document.querySelectorAll('.thumb').forEach(thumb => {
+  //     thumb.addEventListener('click', () => {
+  //       const img = thumb.querySelector('img');
+  //       updateMainImageAndActiveThumbnail(img);
+  //     });
+  //   });
+
+  //   // Variant change handler
+  //   variantSelector.addEventListener('variant-change', (e) => {
+  //     selectedVariantId = e.detail.variantId;
+  //     selectedQuantity = e.detail.quantity;
+
+  //     const variant = variantSelector.variants.find(v => v.id === selectedVariantId);
+  //     if (variant && variant.featured_media && variant.featured_media.id) {
+  //       const targetMediaId = variant.featured_media.id;
+  //       const matchingThumbImg = document.querySelector(`img[data-media-id="${targetMediaId}"]`);
+  //       if (matchingThumbImg) {
+  //         updateMainImageAndActiveThumbnail(matchingThumbImg);
+  //       }
+  //     }
+  //   });
+
+  //   if (typeof variantSelector.updateSelectedVariantAndPrice === 'function') {
+  //     variantSelector.updateSelectedVariantAndPrice();
+  //   }
+
+  //   // Add to Cart handler
+  //   if (addToCartBtn) {
+  //     addToCartBtn.addEventListener('click', async () => {
+  //       if (!selectedVariantId) {
+  //         showToast({ type: 'danger', message: 'Please select a valid variant.' });
+  //         return;
+  //       }
+  //       if (selectedQuantity <= 0) {
+  //         showToast({ type: 'danger', message: 'Please add a quantity.' });
+  //         return;
+  //       }
+  //       try {
+  //         const response = await fetch('/cart/add.js', {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity }),
+  //         });
+  //         if (response.ok) {
+  //           showToast({ type: 'success', message: 'Added to cart!' });
+  //           document.querySelector('cart-icon')?.update();
+  //         } else {
+  //           const error = await response.json();
+  //           showToast({ type: 'danger', message: `Error: ${error.description}` });
+  //         }
+  //       } catch {
+  //         showToast({ type: 'danger', message: 'An error occurred while adding to cart.' });
+  //       }
+  //     });
+  //   }
+
+  //   // Buy Now handler
+  //   if (buyNowBtn) {
+  //     buyNowBtn.addEventListener('click', async () => {
+  //       if (!selectedVariantId) {
+  //         alert('Please select a variant.');
+  //         return;
+  //       }
+  //       try {
+  //         await fetch('/cart/clear.js', { method: 'POST' });
+  //         await fetch('/cart/add.js', {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity }),
+  //         });
+  //         document.querySelector('cart-icon')?.update();
+  //         window.location.href = '/checkout';
+  //       } catch {
+  //         showToast({ type: 'danger', message: 'An error occurred during checkout!' });
+  //       }
+  //     });
+  //   }
+  // });
+</script>

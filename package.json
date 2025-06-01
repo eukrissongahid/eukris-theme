@@ -1,0 +1,43 @@
+{
+  "name": "eukris-theme",
+  "version": "1.0.0",
+  "description": "[![Generic badge](https://img.shields.io/badge/course%20available%3F-yes-green.svg)](https://shields.io/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "concurrently \"webpack --config webpack.config.js --watch\" \"npx @tailwindcss/cli -i ./src/index.css -o ./assets/application.css --watch\"",
+    "format": "prettier --write 'sections/**/*.{liquid,js,css,json}' 'templates/**/*.{liquid,js,css,json}' 'snippets/**/*.{liquid,js,css,json}' 'src/**/*.{liquid,js,css,json}'",
+    "format-check": "prettier --check 'sections/**/*.{liquid,js,css,json}' 'templates/**/*.{liquid,js,css,json}' 'snippets/**/*.{liquid,js,css,json}' 'src/**/*.{liquid,js,css,json}'",
+    "format-liquid": "prettier --write \"**/*.liquid\""
+  },
+"repository": {
+  "type": "git",
+  "url": "git+https://github.com/yourusername/eukris-theme.git"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+"bugs": {
+  "url": "https://github.com/yourusername/eukris-theme/issues"
+},
+  "homepage": "https://github.com/yourusername/eukris-themen#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.7",
+    "alpinejs": "^3.14.9",
+    "tailwindcss": "^4.1.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@shopify/prettier-plugin-liquid": "^1.9.3",
+    "babel-loader": "^8.4.1",
+    "concurrently": "^9.1.2",
+    "css-loader": "^7.1.2",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.12",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  }
+}

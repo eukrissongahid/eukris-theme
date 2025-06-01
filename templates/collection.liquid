@@ -1,0 +1,57 @@
+<div class='p-4 lg:p-8'>
+  <div class='flex min-h-screen flex-col lg:flex-row'>
+    {% section 'main-collection-filters' %}
+    <div class='h-full w-full'>
+      {% section 'main-collection-product-grid' %}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const attachCheckboxListeners = () => {
+      const form = document.getElementById('CollectionFiltersForm');
+      if (!form) return;
+
+      const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          updateProductGrid();
+        });
+      });
+    };
+
+    const updateProductGrid = () => {
+      const form = document.getElementById('CollectionFiltersForm');
+      if (!form) return;
+
+      const params = new URLSearchParams(new FormData(form)).toString();
+
+      const baseUrl = form.getAttribute('action') || window.location.pathname;
+      const url = `${baseUrl}?${params}`;
+
+      fetch(`${url}&sections=main-collection-product-grid,main-collection-filters`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data['main-collection-product-grid']) {
+            document.querySelector('#ProductGrid').innerHTML = data['main-collection-product-grid'];
+          }
+
+          if (data['main-collection-filters']) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data['main-collection-filters'], 'text/html');
+            const newFilters = doc.querySelector('#CollectionFiltersForm');
+            if (newFilters) {
+              const oldForm = document.getElementById('CollectionFiltersForm');
+              oldForm.replaceWith(newFilters);
+              attachCheckboxListeners();
+            }
+          }
+
+          window.history.pushState({}, '', url);
+        });
+    };
+
+    attachCheckboxListeners();
+  });
+</script>

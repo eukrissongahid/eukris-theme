@@ -1,0 +1,100 @@
+<div class='container mx-auto'>
+  <!-- SEARCH FORM -->
+  <h1 class='my-4 text-center text-xl uppercase'>{{ 'labels.search_results' | t }}</h1>
+  <div class='flex items-center justify-center'>
+    <form
+      id='searchForm'
+      action='{{ routes.search_url }}'
+      method='get'
+      class='flex rounded-sm border'
+    >
+      <input
+        type='text'
+        name='q'
+        placeholder='Search'
+        value='{{ search.terms | escape }}'
+        class='w-80 border-none px-4 py-2 outline-none focus:ring-0'
+      >
+      <button
+        type='submit'
+        class='cursor-pointer rounded-sm border bg-orange-600 px-4 text-white hover:bg-orange-400'
+      >
+        {{ 'buttons.search' | t }}
+      </button>
+    </form>
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  <div id='searchResults'>
+    {% paginate search.results by 10 %}
+      {% if search.performed %}
+        {% if search.results.size > 0 %}
+          <div class='mx-auto max-w-6xl'>
+            <p class='my-10 text-center text-gray-500'>
+              {{ search.results.size }}
+              {{ 'labels.results_for_the_search_term' | t }}
+              {{ search.terms | escape }}
+            </p>
+            <!-- FLEXBOX instead of GRID -->
+            <div class='flex flex-wrap justify-center gap-4'>
+              {% for item in search.results %}
+                {% case item.object_type %}
+                  {% when 'product' %}
+                    {% render 'product-card', product_product: item %}
+                {% endcase %}
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class='my-10 text-center'>
+            <p>
+              {{ 'labels.no_result_found_prefix' | t }}
+              {{ search.terms | escape }}
+              {{ 'labels.different_keyword_sufix' | t }}
+            </p>
+          </div>
+        {% endif %}
+      {% endif %}
+
+      {% render 'pagination', pagination: paginate %}
+    {% endpaginate %}
+  </div>
+</div>
+
+<script>
+  document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const query = new URLSearchParams(new FormData(form)).toString();
+    const resultsContainer = document.getElementById('searchResults');
+
+    fetch(`${form.action}?${query}`)
+      .then((res) => res.text())
+      .then((html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newResults = doc.querySelector('#searchResults');
+
+        if (newResults) {
+          const productCards = newResults.querySelectorAll('.product-card');
+          if (productCards.length > 0) {
+            resultsContainer.innerHTML = newResults.innerHTML;
+          } else {
+            resultsContainer.innerHTML = `
+              <div class='my-10 text-center'>
+                <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
+              </div>`;
+          }
+        } else {
+          resultsContainer.innerHTML = `
+            <div class='my-10 text-center'>
+              <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
+            </div>`;
+        }
+      })
+      .catch((err) => {
+        showToast({ type: 'danger', message: `Search failed: ${err}` });
+      });
+  });
+</script>

@@ -1,0 +1,52 @@
+{
+  "sections": {
+    "home-carousel": {
+      "type": "carousel",
+      "settings": {
+        "autoplay": true,
+        "autoplay_speed": 5000
+      },
+      "blocks": {
+        "block1": {
+          "type": "slide",
+          "settings": {
+            "image": null,
+            "link": null
+          }
+        },
+        "block2": {
+          "type": "slide",
+          "settings": {
+            "image": null,
+            "link": null
+          }
+        }
+      }
+    },
+    "featured-sale-products": {
+      "type": "featured-sale-products",
+      "settings": {
+        "featured_sale_collection": "all"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "featured_collection": "all"
+      }
+    },
+    "featured-collections": {
+      "type": "featured-collections",
+      "settings": {
+        "title": "Featured Collections",
+        "featured_collections": []
+      }
+    }
+  },
+  "order": [
+    "home-carousel",
+    "featured-sale-products",
+    "featured-collection",
+    "featured-collections"
+  ]
+}

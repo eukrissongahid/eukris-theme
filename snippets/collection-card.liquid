@@ -1,0 +1,40 @@
+<div class='w-full max-w-[300px] min-w-[260px] px-3 py-6'>
+  <div class='flex h-full flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg'>
+    <a
+      href='{{ collection_collection.url }}'
+      class='relative block h-60 w-full overflow-hidden border-b border-gray-300 bg-gray-50'
+    >
+      {% if collection_collection.image %}
+        <img
+          class='h-full w-full transform object-cover transition duration-1000 ease-in-out hover:scale-105'
+          src='{{ collection_collection.featured_image | img_url: 'medium' }}'
+          alt='{{ collection_collection.featured_image.alt }}'
+          loading='lazy'
+          decoding='async'
+        >
+      {% else %}
+        <div class='flex h-full w-full items-center justify-center text-gray-300'>
+          {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+        </div>
+      {% endif %}
+    </a>
+    <div class='flex min-h-[135px] flex-grow flex-col p-4'>
+      <a
+        href='{{ collection_collection.url }}'
+        class='line-clamp-2 text-lg font-semibold text-gray-900 uppercase transition hover:text-orange-600'
+        title='{{ collection_collection.title }}'
+      >
+        {{ collection_collection.title }}
+      </a>
+      <a
+        href='{{ collection_collection.url }}'
+        class='mt-1 line-clamp-3 flex-grow text-xs font-light text-gray-600'
+      >
+        {{ collection_collection.description }}
+      </a>
+      <p class='text-lg font-semibold text-gray-900'>
+        {{ collection_collection.all_products_count }} Products
+      </p>
+    </div>
+  </div>
+</div>

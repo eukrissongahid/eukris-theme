@@ -1,0 +1,41 @@
+<div class='my-8 flex flex-col items-center py-20'>
+  <h1 class='mb-7 text-center text-3xl uppercase'>{{ section.settings.title }}</h1>
+
+  <div class='mx-auto max-w-7xl'>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+      {% for collection in section.settings.featured_collections
+        limit: section.settings.number_of_products_to_show
+      %}
+        {% render 'collection-card', collection_collection: collection %}
+      {% else %}
+        {% for item in (1..4) %}
+          {% render 'collection-card-placeholder' %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured Collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Featured Collections",
+      "label": "Title"
+    },
+    {
+      "type": "collection_list",
+      "id": "featured_collections",
+      "label": "Collections"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collections"
+    }
+  ]
+}
+{% endschema %}

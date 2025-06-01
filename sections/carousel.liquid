@@ -1,0 +1,67 @@
+<div class='w-full'>
+  <shop-carousel
+    data-slides='
+      [
+        {% for block in section.blocks %}
+          {
+            "image": "{{ block.settings.image | image_url | default: '' }}",
+            "link": "{{ block.settings.link | default: '#' }}"
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    '
+    data-autoplay='{{ section.settings.autoplay }}'
+    data-speed='{{ section.settings.autoplay_speed }}'
+  >
+  </shop-carousel>
+</div>
+
+{% schema %}
+{
+  "name": "Home Carousel",
+  "tag": "section",
+  "class": "w-full",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay speed (ms)",
+      "min": 1000,
+      "max": 9500,
+      "step": 500,
+      "default": 5000
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Home Carousel",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

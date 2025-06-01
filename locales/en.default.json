@@ -1,0 +1,50 @@
+{
+  "general": {
+    "404": {
+      "title": "Not found",
+      "subtext_html": "The page you were looking for does not exist"
+    }
+  },
+    "product-card-placeholder": {
+    "title": "Placeholder Title",
+    "description": "Placeholder product description goes here. This is just filler text to simulate the real product.",
+    "product_count": "$0.00",
+    "inventory_status": "Inventory status"
+  },
+    "collection-card-placeholder": {
+    "title": "Placeholder Title",
+    "description": "Placeholder description text to simulate a collection summary or intro paragraph.",
+    "product_count": "0 Products"
+  },
+    "buttons": {
+    "previous": "Previous",
+    "next": "Next",
+    "search": "Search",
+    "update": "Update",
+    "checkout": "Checkout",
+    "add_to_cart": "Add to Cart",
+    "buy_now": "Buy Now"
+  },
+    "labels": {
+      "search_results": "search results",
+      "results_for_the_search_term": "results for the search term",
+      "no_result_found_prefix": "No results found for the search term:",
+      "different_keyword_sufix": ". Try to use a different keyword.",
+      "search_products": "search products",
+      "no_product_founds": "There are no products found!",
+      "quantity": "Quantity",
+      "item": "Item",
+      "total_col": "Total",
+      "total": "Total:",
+      "shopping": "Continue shopping",
+      "cart": "cart",
+      "tax": "Tax:",
+      "cart_notes": "Cart notes (optional)",
+      "discount_code_description": "Have a discount code? You can apply it at checkout.",
+      "subtotal": "Subtotal",
+      "taxes_and_shipping_description": "Taxes and shipping calculated at checkout.",
+      "secure_checkout": "Secure checkout",
+      "cart_empty": "Your cart is empty",
+      "alright_reserved_sufix": ". All Rights Reserved.",
+    }
+}

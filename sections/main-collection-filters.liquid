@@ -1,0 +1,43 @@
+<aside class='h-full w-full min-w-[250px] rounded-md bg-gray-100 p-4 lg:w-64'>
+  <form id='CollectionFiltersForm' method='get' class='space-y-8'>
+    {% for current_filter in collection.filters %}
+      {% if current_filter.values.size > 0 %}
+        <div>
+          <!-- Filter Group Label -->
+          <p class='mb-3 border-b border-orange-300 pb-1 text-base font-semibold text-orange-700'>
+            {{ current_filter.label }}
+          </p>
+
+          <!-- Sorted Filter Values -->
+          {% assign sorted_values = current_filter.values | sort: 'label' %}
+          <div class='max-h-60 space-y-3 overflow-y-auto pr-2'>
+            {% for value in sorted_values %}
+              <label class='flex cursor-pointer items-center text-gray-800 transition-colors duration-200 hover:text-orange-600'>
+                <input
+                  type='checkbox'
+                  name='{{ current_filter.param_name }}'
+                  value='{{ value.value }}'
+                  {% if value.active %}
+                    checked
+                  {% endif %}
+                  class='form-checkbox mr-3 h-5 w-5 cursor-pointer text-orange-600'
+                >
+                <span class='select-none'>
+                  {{ value.label }}
+                  <span class='ml-1 text-gray-400'>({{ value.count }})</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </form>
+</aside>
+
+{% schema %}
+{
+  "name": "Collection Filters",
+  "settings": []
+}
+{% endschema %}

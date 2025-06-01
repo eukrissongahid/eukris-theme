@@ -1,0 +1,380 @@
+<div id='cart-content' class='p-4' style='{% if cart.item_count == 0 %}display:none;{% endif %}'>
+  <div class='mx-auto my-10 flex max-w-6xl flex-col'>
+    <div class='my-5 flex items-end justify-between'>
+      <h1 class='text-3xl font-semibold text-orange-700 uppercase'>{{ 'labels.cart' | t }}</h1>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='font-medium text-blue-600 underline hover:text-blue-800'
+      >
+        {{- 'labels.shopping' | t -}}
+      </a>
+    </div>
+  </div>
+
+  <div class='mx-auto my-10 flex max-w-6xl flex-col'>
+    <form action='{{ routes.cart_url }}' method='post' novalidate>
+      <!-- Header row: hidden on small screens -->
+      <div class='mb-2 hidden border-b border-orange-400 font-medium text-gray-500 md:flex'>
+        <div class='flex-grow px-4 py-2'>{{ 'labels.item' | t }}</div>
+        <div class='w-32 px-4 py-2'>{{ 'labels.quantity' | t }}</div>
+        <div class='w-32 px-4 py-2'>{{ 'labels.total_col' | t }}</div>
+        <div class='w-12 px-4 py-2'></div>
+      </div>
+
+      <!-- Cart items -->
+      <div id='cart-items' class='divide-y divide-orange-400'>
+        {% for item in cart.items %}
+          <cart-item
+            variant-id='{{ item.variant_id }}'
+            quantity='{{ item.quantity }}'
+            product-url='{{ item.url }}'
+            product-title='{{ item.product.title | escape }}'
+            variant-title='{{ item.variant.title | escape }}'
+            image-src='{{ item.image | img_url: 'small' }}'
+            line-price='{{ item.line_price | money }}'
+            final-price='{{ item.final_line_price | divided_by: item.quantity | money }}'
+            line-index='{{ forloop.index0 }}'
+          ></cart-item>
+        {% endfor %}
+      </div>
+      <div class='flex flex-col items-center justify-between px-2 sm:px-4 md:flex-row'>
+        <div class='my-4 w-full'>
+          <div class='flex flex-col items-start'>
+            <label for='cart_notes' class='my-1'>{{ 'labels.cart_notes' | t }}</label>
+            <textarea
+              name='note'
+              id='cart_notes'
+              class='h-20 w-full resize-none rounded-sm border border-gray-300 p-2 outline-none md:max-w-lg'
+            ></textarea>
+          </div>
+        </div>
+        <div class='my-4 w-full md:w-80'>
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'subtotal' %}
+                <p class='mb-4 text-sm text-gray-600'>
+                  {{ 'labels.discount_code_description' | t }}
+                </p>
+
+                {% assign subtotal = cart.subtotal_price
+                  | default: cart.items_subtotal_price
+                  | default: cart.total_price
+                %}
+
+                <h3 class='text-xl' id='subtotal-price'>
+                  {{ 'labels.subtotal' | t }}
+                  {{ subtotal | money }}
+                </h3>
+
+                {% if cart.tax_lines.size > 0 %}
+                  <p class='mt-2 text-sm' id='tax-price'>
+                    {{ 'labels.tax' | t }}
+                    {{ cart.total_tax | money }}
+                  </p>
+                  <p class='text-lg font-semibold' id='total-price'>
+                    {{ 'labels.total' | t }}
+                    {{ cart.total_price | money }}
+                  </p>
+                {% else %}
+                  <p class='mt-2 text-sm text-gray-500'>
+                    {{ 'labels.taxes_and_shipping_description' | t }}
+                  </p>
+                {% endif %}
+              {% when 'update_button' %}
+                <div class='my-2'>
+                  <button
+                    id='update-cart-button'
+                    type='button'
+                    name='update'
+                    class='w-full cursor-pointer rounded bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600'
+                  >
+                    {{ 'buttons.update' | t }}
+                  </button>
+                </div>
+              {% when 'checkout_button' %}
+                <div class='my-2'>
+                  <button
+                    type='submit'
+                    name='checkout'
+                    class='w-full cursor-pointer rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-900'
+                  >
+                    {{ 'buttons.checkout' | t }}
+                  </button>
+                  <div class='mt-2 flex items-center gap-2 text-sm text-gray-500'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      class='h-4 w-4 text-green-600'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zM5 13h14v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6z" />
+                    </svg>
+                    <span>{{ 'labels.secure_checkout' | t }}</span>
+                  </div>
+                </div>
+              {% else %}
+
+            {% endcase %}
+          {% endfor %}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div
+  id='empty-cart-message'
+  class='mx-auto my-4 flex h-60 max-w-6xl items-center justify-center'
+  style='{% if cart.item_count > 0 %}display:none;{% endif %}'
+>
+  <div class='text-center'>
+    <h1 class='my-4 text-3xl'>{{ 'labels.cart_empty' | t }}</h1>
+    <div class='my-4 py-4'>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='rounded-md border border-orange-600 bg-orange-600 px-8 py-3 text-white hover:bg-orange-500'
+      >
+        {{- 'labels.shopping' | t -}}
+      </a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Template Cart",
+  "blocks": [
+    {
+      "type": "subtotal",
+      "name": "Subtotal",
+      "limit": 1
+    },
+    {
+      "type": "update_button",
+      "name": "Update Button",
+      "limit": 1
+    },
+    {
+      "type": "checkout_button",
+      "name": "Checkout Button",
+      "limit": 1
+    }
+  ]
+}
+{% endschema %}
+<script>
+  // async function changeLineItem(lineIndex, quantity) {
+  //   const response = await fetch('/cart/change.js', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json'
+  //     },
+  //     body: JSON.stringify({
+  //       line: parseInt(lineIndex, 10) + 1, // Shopify uses 1-based line numbers
+  //       quantity: quantity
+  //     })
+  //   });
+
+  //   if (!response.ok) {
+  //     showToast({ type: 'danger', message: 'Cart update failed!' });
+  //     return;
+  //   }
+
+  //   const updatedCart = await response.json();
+  //   updateCart(updatedCart);
+  //   showToast({ type: 'success', message: 'Cart updated successfully!' });
+  //   document.querySelector('cart-icon')?.update();
+  // }
+
+  // function updateCart(cart) {
+  //   const cartItemsContainer = document.querySelector('#cart-items');
+  //   if (!cartItemsContainer) return;
+
+  //   if (cart.item_count === 0) {
+  //     document.getElementById('cart-content').style.display = 'none';
+  //     document.getElementById('empty-cart-message').style.display = 'flex'; // or 'block'
+  //   } else {
+  //     document.getElementById('cart-content').style.display = 'block';
+  //     document.getElementById('empty-cart-message').style.display = 'none';
+  //   }
+
+  //   cartItemsContainer.innerHTML = '';
+
+  //   cart.items.forEach((item, index) => {
+  //     const cartItem = document.createElement('cart-item');
+  //     cartItem.setAttribute('variant-id', item.variant_id);
+  //     cartItem.setAttribute('quantity', item.quantity);
+  //     cartItem.setAttribute('product-url', item.url);
+  //     cartItem.setAttribute('product-title', item.product_title);
+  //     cartItem.setAttribute('variant-title', item.variant_title || '');
+  //     cartItem.setAttribute('image-src', item.image);
+  //     cartItem.setAttribute('line-price', formatMoney(item.line_price));
+  //     cartItem.setAttribute('final-price', formatMoney(item.final_price));
+  //     cartItem.setAttribute('line-index', index);
+
+  //     cartItemsContainer.appendChild(cartItem);
+  //   });
+
+  //   const subtotalPriceEl = document.getElementById('subtotal-price');
+  //   if (subtotalPriceEl) {
+  //     subtotalPriceEl.textContent = formatMoney(
+  //       cart.items_subtotal_price || cart.subtotal_price || cart.total_price
+  //     );
+  //   }
+
+  //   const taxPriceEl = document.getElementById('tax-price');
+  //   if (taxPriceEl) {
+  //     taxPriceEl.textContent = formatMoney(cart.total_tax || 0);
+  //   }
+
+  //   const totalPriceEl = document.getElementById('total-price');
+  //   if (totalPriceEl) {
+  //     totalPriceEl.textContent = formatMoney(cart.total_price);
+  //   }
+  // }
+
+  // document.addEventListener('remove-item', (event) => {
+  //   const { lineIndex } = event.detail;
+  //   changeLineItem(lineIndex, 0);
+  // });
+
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   const updateBtn = document.getElementById('update-cart-button');
+  //   if (updateBtn) {
+  //     updateBtn.addEventListener('click', async () => {
+  //       const cartItems = document.querySelectorAll('cart-item');
+  //       for (const cartItem of cartItems) {
+  //         const lineIndex = cartItem.getAttribute('line-index');
+  //         const quantity = cartItem.currentQuantity;
+  //         await changeLineItem(lineIndex, quantity);
+  //       }
+  //     });
+  //   } else {
+  //     showToast({ type: 'danger', message: 'Update cart button not found!' });
+  //   }
+  // });
+
+  // function formatMoney(cents) {
+  //   if (typeof cents !== 'number') return '';
+  //   return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  // }
+</script>
+<script>
+  const cartItemsContainer = document.querySelector('#cart-items');
+  const cartContentEl = document.getElementById('cart-content');
+  const emptyCartMessageEl = document.getElementById('empty-cart-message');
+  const subtotalPriceEl = document.getElementById('subtotal-price');
+  const taxPriceEl = document.getElementById('tax-price');
+  const totalPriceEl = document.getElementById('total-price');
+  const updateBtn = document.getElementById('update-cart-button');
+
+  async function changeLineItem(lineIndex, quantity) {
+    const response = await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        line: parseInt(lineIndex, 10) + 1,
+        quantity: quantity
+      })
+    });
+
+    if (!response.ok) {
+      showToast({ type: 'danger', message: 'Cart update failed!' });
+      return;
+    }
+
+    const updatedCart = await response.json();
+    updateCart(updatedCart);
+    showToast({ type: 'success', message: 'Cart updated successfully!' });
+    document.querySelector('cart-icon')?.update();
+  }
+
+  function updateCart(cart) {
+    if (!cartItemsContainer) return;
+
+    if (cart.item_count === 0) {
+      if (cartContentEl) cartContentEl.style.display = 'none';
+      if (emptyCartMessageEl) emptyCartMessageEl.style.display = 'flex';
+    } else {
+      if (cartContentEl) cartContentEl.style.display = 'block';
+      if (emptyCartMessageEl) emptyCartMessageEl.style.display = 'none';
+    }
+
+    cartItemsContainer.innerHTML = '';
+
+    cart.items.forEach((item, index) => {
+      const cartItem = document.createElement('cart-item');
+      cartItem.setAttribute('variant-id', item.variant_id);
+      cartItem.setAttribute('quantity', item.quantity);
+      cartItem.setAttribute('product-url', item.url);
+      cartItem.setAttribute('product-title', item.product_title);
+      cartItem.setAttribute('variant-title', item.variant_title || '');
+      cartItem.setAttribute('image-src', item.image);
+      cartItem.setAttribute('line-price', formatMoney(item.line_price));
+      cartItem.setAttribute('final-price', formatMoney(item.final_price));
+      cartItem.setAttribute('line-index', index);
+
+      cartItemsContainer.appendChild(cartItem);
+    });
+
+    if (subtotalPriceEl) {
+      subtotalPriceEl.textContent = formatMoney(
+        cart.items_subtotal_price || cart.subtotal_price || cart.total_price
+      );
+    }
+
+    if (taxPriceEl) {
+      taxPriceEl.textContent = formatMoney(cart.total_tax || 0);
+    }
+
+    if (totalPriceEl) {
+      totalPriceEl.textContent = formatMoney(cart.total_price);
+    }
+  }
+
+  document.addEventListener('remove-item', (event) => {
+    const { lineIndex } = event.detail;
+    changeLineItem(lineIndex, 0);
+  });
+
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   if (updateBtn) {
+  //     updateBtn.addEventListener('click', async () => {
+  //       const cartItems = document.querySelectorAll('cart-item');
+  //       for (const cartItem of cartItems) {
+  //         const lineIndex = cartItem.getAttribute('line-index');
+  //         const quantity = cartItem.currentQuantity;
+  //         await changeLineItem(lineIndex, quantity);
+  //       }
+  //     });
+  //   } else {
+  //     showToast({ type: 'danger', message: 'Update cart button not found!' });
+  //   }
+  // });
+
+  updateBtn.addEventListener('click', async () => {
+    const cartItems = document.querySelectorAll('cart-item');
+    let updated = false;
+
+    for (const cartItem of cartItems) {
+      const lineIndex = cartItem.getAttribute('line-index');
+      const newQuantity = cartItem.currentQuantity;
+      const currentQuantity = parseInt(cartItem.getAttribute('quantity'), 10);
+
+      // Only update if quantity actually changed
+      if (newQuantity !== currentQuantity) {
+        await changeLineItem(lineIndex, newQuantity);
+        updated = true;
+      }
+    }
+
+    if (!updated) {
+      showToast({ type: 'info', message: 'No changes to update.' });
+    }
+  });
+</script>

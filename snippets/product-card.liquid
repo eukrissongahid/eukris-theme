@@ -1,0 +1,77 @@
+<div class='w-full max-w-[300px] min-w-[260px] px-3 py-6'>
+  <div class='flex h-full flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg'>
+    <a
+      href='{{ product_product.url }}'
+      class='relative block h-60 w-full overflow-hidden border-b border-gray-300 bg-gray-50'
+    >
+      {% if product_product.featured_image %}
+        <img
+          class='h-full w-full transform object-cover transition duration-1000 ease-in-out hover:scale-105'
+          src='{{ product_product.featured_image | img_url: 'medium' }}'
+          alt='{{ product_product.featured_image.alt }}'
+          loading='lazy'
+          decoding='async'
+        >
+      {% else %}
+        <div class='flex h-full w-full items-center justify-center text-gray-300'>
+          {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+        </div>
+      {% endif %}
+
+      {% if product_product.compare_at_price > product_product.price %}
+        <span class='absolute top-2 left-2 rounded bg-orange-500 px-2 py-1 text-xs font-bold text-white shadow-lg'>
+          Sale
+        </span>
+      {% endif %}
+    </a>
+
+    <div class='flex min-h-[135px] flex-grow flex-col p-4'>
+      <a
+        href='{{ product_product.url }}'
+        class='line-clamp-2 text-lg font-semibold text-gray-900 uppercase transition hover:text-orange-600'
+        title='{{ product_product.title }}'
+      >
+        {{ product_product.title }}
+      </a>
+
+      <a
+        href='{{ product_product.url }}'
+        class='mt-1 line-clamp-3 flex-grow text-xs font-light text-gray-600'
+      >
+        {{ product_product.description }}
+      </a>
+
+      <div class='mt-4'>
+        {% if product_product.compare_at_price > product_product.price %}
+          <div class='flex items-center space-x-2'>
+            <span class='text-sm text-gray-500 line-through'
+              >${{ product_product.compare_at_price | money_without_currency }}
+            </span>
+            <span class='text-lg font-bold text-orange-600'
+              >${{ product_product.price | money_without_currency }}
+            </span>
+          </div>
+        {% else %}
+          <p class='text-lg font-semibold text-gray-900'>
+            ${{ product_product.price | money_without_currency }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% assign total_inventory = 0 %}
+      {% for variant in product_product.variants %}
+        {% if variant.available and variant.inventory_management %}
+          {% assign total_inventory = total_inventory | plus: variant.inventory_quantity %}
+        {% endif %}
+      {% endfor %}
+
+      <p class='mt-2 text-sm text-gray-600'>
+        {% if total_inventory > 0 %}
+          Only {{ total_inventory }} left in stock!
+        {% else %}
+          Out of stock
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</div>
