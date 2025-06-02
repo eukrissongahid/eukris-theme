@@ -10,21 +10,20 @@
     "format-check": "prettier --check 'sections/**/*.{liquid,js,css,json}' 'templates/**/*.{liquid,js,css,json}' 'snippets/**/*.{liquid,js,css,json}' 'src/**/*.{liquid,js,css,json}'",
     "format-liquid": "prettier --write \"**/*.liquid\""
   },
-"repository": {
-  "type": "git",
-  "url": "git+https://github.com/eukrissongahid/eukris-theme.git"
-},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eukrissongahid/eukris-theme.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-"bugs": {
-  "url": "https://github.com/eukrissongahid/eukris-theme/issues"
-},
+  "bugs": {
+    "url": "https://github.com/eukrissongahid/eukris-theme/issues"
+  },
   "homepage": "https://github.com/eukrissongahid/eukris-themen#readme",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.7",
-    "alpinejs": "^3.14.9",
     "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
