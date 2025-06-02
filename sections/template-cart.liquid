@@ -326,7 +326,7 @@
 
       // Find the updated item by lineIndex
       const updatedItem = updatedCart.items[lineIndex];
-      if (updatedItem) {
+      if (updatedItem && quantity > 0) {
         const productTitle = updatedItem.product_title;
         const variantTitle = updatedItem.variant_title || '';
         const qty = updatedItem.quantity;
