@@ -2,7 +2,7 @@
 
 [![Generic badge](https://img.shields.io/badge/course%20available%3F-yes-green.svg)](https://shields.io/)
 
-A custom Shopify theme built with Tailwind CSS, Alpine.js, and Webpack.
+A custom Shopify theme built with Tailwind CSS and Webpack.
 
 ---
 
