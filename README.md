@@ -21,3 +21,4 @@ A custom Shopify theme built with Tailwind CSS, Alpine.js, and Webpack.
    ```bash
    git clone https://github.com/eukrissongahid/eukris-theme.git
    cd eukris-theme
+   npm install
