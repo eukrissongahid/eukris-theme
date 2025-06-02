@@ -25,9 +25,8 @@
       <!-- MOBILE SEARCH BUTTON -->
       <div class='ml-auto md:hidden'>
         <button
-          id='search-bar-open'
           type='button'
-          class='inline-flex cursor-pointer items-center justify-center p-2 text-gray-500 hover:text-gray-900'
+          class='search-bar-open inline-flex cursor-pointer items-center justify-center p-2 text-gray-500 hover:text-gray-900'
         >
           {% render 'icon-search' %}
         </button>
@@ -91,9 +90,8 @@
       <!-- RIGHT SIDE ICONS -->
       <div class='hidden items-center justify-end space-x-5 md:flex md:flex-1'>
         <button
-          id='search-bar-open'
           type='button'
-          class='cursor-pointer text-base whitespace-nowrap text-gray-500 hover:text-gray-900'
+          class='search-bar-open cursor-pointer text-base whitespace-nowrap text-gray-500 hover:text-gray-900'
         >
           {% render 'icon-search' %}
         </button>
@@ -230,57 +228,6 @@
 {% endschema %}
 
 <script>
-  // document.addEventListener('DOMContentLoaded', () => {
-  //   // Mobile menu open/close
-  //   const mobileMenu = document.getElementById('mobile-menu');
-  //   document.getElementById('mobile-menu-open').addEventListener('click', () => {
-  //     mobileMenu.classList.remove('hidden');
-  //   });
-  //   document.getElementById('mobile-menu-close').addEventListener('click', () => {
-  //     mobileMenu.classList.add('hidden');
-  //   });
-
-  //   // Search bar open/close
-  //   const searchBar = document.getElementById('search-bar');
-  //   document.getElementById('search-bar-open').addEventListener('click', () => {
-  //     searchBar.classList.remove('hidden');
-  //   });
-  //   document.getElementById('search-bar-close').addEventListener('click', () => {
-  //     searchBar.classList.add('hidden');
-  //   });
-
-  //   // Desktop dropdown toggles
-  //   document.querySelectorAll('.menu-dropdown-toggle').forEach((button) => {
-  //     const targetId = button.getAttribute('data-target');
-  //     const target = document.getElementById(targetId);
-
-  //     button.addEventListener('click', (e) => {
-  //       e.stopPropagation();
-  //       target.classList.toggle('hidden');
-  //     });
-  //   });
-
-  //   // Close desktop dropdowns on clicking outside
-  //   document.addEventListener('click', () => {
-  //     document.querySelectorAll('[id^="submenu-"]').forEach((submenu) => {
-  //       submenu.classList.add('hidden');
-  //     });
-  //   });
-
-  //   // Mobile submenu toggles
-  //   document.querySelectorAll('.mobile-submenu-toggle').forEach((button) => {
-  //     const targetId = button.getAttribute('data-target');
-  //     const target = document.getElementById(targetId);
-
-  //     button.addEventListener('click', (e) => {
-  //       e.stopPropagation();
-  //       target.classList.toggle('hidden');
-  //     });
-  //   });
-  // });
-</script>
-
-<script>
   document.addEventListener('DOMContentLoaded', () => {
     function toggleVisibilityOnClick(buttonId, targetId, show = true) {
       const button = document.getElementById(buttonId);
@@ -301,7 +248,15 @@
     toggleVisibilityOnClick('mobile-menu-close', 'mobile-menu', false);
 
     // Search bar open/close
-    toggleVisibilityOnClick('search-bar-open', 'search-bar', true);
+    document.querySelectorAll('.search-bar-open').forEach((button) => {
+      const target = document.getElementById('search-bar');
+      if (!target) return;
+
+      button.addEventListener('click', () => {
+        target.classList.remove('hidden');
+      });
+    });
+
     toggleVisibilityOnClick('search-bar-close', 'search-bar', false);
 
     // Generic toggle function for dropdowns

@@ -164,15 +164,23 @@
 }
 {% endschema %}
 <script>
+  // const cartItemsContainer = document.querySelector('#cart-items');
+  // const cartContentEl = document.getElementById('cart-content');
+  // const emptyCartMessageEl = document.getElementById('empty-cart-message');
+  // const subtotalPriceEl = document.getElementById('subtotal-price');
+  // const taxPriceEl = document.getElementById('tax-price');
+  // const totalPriceEl = document.getElementById('total-price');
+  // const updateBtn = document.getElementById('update-cart-button');
+
   // async function changeLineItem(lineIndex, quantity) {
-  //   const response = await fetch('/cart/change.js', {
+  //   const response = await fetch(SHOPIFY_CONSTANTS.ROUTES.CART_CHANGE, {
   //     method: 'POST',
   //     headers: {
   //       'Content-Type': 'application/json',
   //       Accept: 'application/json'
   //     },
   //     body: JSON.stringify({
-  //       line: parseInt(lineIndex, 10) + 1, // Shopify uses 1-based line numbers
+  //       line: parseInt(lineIndex, 10) + 1,
   //       quantity: quantity
   //     })
   //   });
@@ -189,15 +197,14 @@
   // }
 
   // function updateCart(cart) {
-  //   const cartItemsContainer = document.querySelector('#cart-items');
   //   if (!cartItemsContainer) return;
 
   //   if (cart.item_count === 0) {
-  //     document.getElementById('cart-content').style.display = 'none';
-  //     document.getElementById('empty-cart-message').style.display = 'flex'; // or 'block'
+  //     if (cartContentEl) cartContentEl.style.display = 'none';
+  //     if (emptyCartMessageEl) emptyCartMessageEl.style.display = 'flex';
   //   } else {
-  //     document.getElementById('cart-content').style.display = 'block';
-  //     document.getElementById('empty-cart-message').style.display = 'none';
+  //     if (cartContentEl) cartContentEl.style.display = 'block';
+  //     if (emptyCartMessageEl) emptyCartMessageEl.style.display = 'none';
   //   }
 
   //   cartItemsContainer.innerHTML = '';
@@ -217,19 +224,16 @@
   //     cartItemsContainer.appendChild(cartItem);
   //   });
 
-  //   const subtotalPriceEl = document.getElementById('subtotal-price');
   //   if (subtotalPriceEl) {
   //     subtotalPriceEl.textContent = formatMoney(
   //       cart.items_subtotal_price || cart.subtotal_price || cart.total_price
   //     );
   //   }
 
-  //   const taxPriceEl = document.getElementById('tax-price');
   //   if (taxPriceEl) {
   //     taxPriceEl.textContent = formatMoney(cart.total_tax || 0);
   //   }
 
-  //   const totalPriceEl = document.getElementById('total-price');
   //   if (totalPriceEl) {
   //     totalPriceEl.textContent = formatMoney(cart.total_price);
   //   }
@@ -240,27 +244,27 @@
   //   changeLineItem(lineIndex, 0);
   // });
 
-  // document.addEventListener('DOMContentLoaded', () => {
-  //   const updateBtn = document.getElementById('update-cart-button');
-  //   if (updateBtn) {
-  //     updateBtn.addEventListener('click', async () => {
-  //       const cartItems = document.querySelectorAll('cart-item');
-  //       for (const cartItem of cartItems) {
-  //         const lineIndex = cartItem.getAttribute('line-index');
-  //         const quantity = cartItem.currentQuantity;
-  //         await changeLineItem(lineIndex, quantity);
-  //       }
-  //     });
-  //   } else {
-  //     showToast({ type: 'danger', message: 'Update cart button not found!' });
+  // updateBtn.addEventListener('click', async () => {
+  //   const cartItems = document.querySelectorAll('cart-item');
+  //   let updated = false;
+
+  //   for (const cartItem of cartItems) {
+  //     const lineIndex = cartItem.getAttribute('line-index');
+  //     const newQuantity = cartItem.currentQuantity;
+  //     const currentQuantity = parseInt(cartItem.getAttribute('quantity'), 10);
+
+  //     if (newQuantity !== currentQuantity) {
+  //       await changeLineItem(lineIndex, newQuantity);
+  //       updated = true;
+  //     }
+  //   }
+
+  //   if (!updated) {
+  //     showToast({ type: 'info', message: 'No changes to update.' });
   //   }
   // });
-
-  // function formatMoney(cents) {
-  //   if (typeof cents !== 'number') return '';
-  //   return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  // }
 </script>
+
 <script>
   const cartItemsContainer = document.querySelector('#cart-items');
   const cartContentEl = document.getElementById('cart-content');
@@ -270,28 +274,74 @@
   const totalPriceEl = document.getElementById('total-price');
   const updateBtn = document.getElementById('update-cart-button');
 
+  // async function changeLineItem(lineIndex, quantity) {
+  //   try {
+  //     const response = await fetch(SHOPIFY_CONSTANTS.ROUTES.CART_CHANGE, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Accept: 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         line: Number(lineIndex) + 1,
+  //         quantity: quantity
+  //       })
+  //     });
+
+  //     if (!response.ok) {
+  //       showToast({ type: 'danger', message: 'Cart update failed!' });
+  //       return;
+  //     }
+
+  //     const updatedCart = await response.json();
+  //     updateCart(updatedCart);
+  //     showToast({ type: 'success', message: 'Cart updated successfully!' });
+  //     document.querySelector('cart-icon')?.update();
+  //   } catch (error) {
+  //     showToast({ type: 'danger', message: 'Cart update failed!' });
+  //   }
+  // }
+
   async function changeLineItem(lineIndex, quantity) {
-    const response = await fetch('/cart/change.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        line: parseInt(lineIndex, 10) + 1,
-        quantity: quantity
-      })
-    });
+    try {
+      const response = await fetch(SHOPIFY_CONSTANTS.ROUTES.CART_CHANGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          line: Number(lineIndex) + 1,
+          quantity: quantity
+        })
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        showToast({ type: 'danger', message: 'Cart update failed!' });
+        return;
+      }
+
+      const updatedCart = await response.json();
+      updateCart(updatedCart);
+
+      // Find the updated item by lineIndex
+      const updatedItem = updatedCart.items[lineIndex];
+      if (updatedItem) {
+        const productTitle = updatedItem.product_title;
+        const variantTitle = updatedItem.variant_title || '';
+        const qty = updatedItem.quantity;
+
+        // Construct detailed toast message
+        const message = `Updated "${productTitle}"${
+          variantTitle ? ' - ' + variantTitle : ''
+        } to quantity: ${qty}`;
+        showToast({ type: 'success', message });
+      }
+
+      document.querySelector('cart-icon')?.update();
+    } catch (error) {
       showToast({ type: 'danger', message: 'Cart update failed!' });
-      return;
     }
-
-    const updatedCart = await response.json();
-    updateCart(updatedCart);
-    showToast({ type: 'success', message: 'Cart updated successfully!' });
-    document.querySelector('cart-icon')?.update();
   }
 
   function updateCart(cart) {
@@ -324,7 +374,7 @@
 
     if (subtotalPriceEl) {
       subtotalPriceEl.textContent = formatMoney(
-        cart.items_subtotal_price || cart.subtotal_price || cart.total_price
+        cart.items_subtotal_price ?? cart.subtotal_price ?? cart.total_price
       );
     }
 
@@ -337,44 +387,53 @@
     }
   }
 
-  document.addEventListener('remove-item', (event) => {
-    const { lineIndex } = event.detail;
-    changeLineItem(lineIndex, 0);
-  });
-
-  // document.addEventListener('DOMContentLoaded', () => {
-  //   if (updateBtn) {
-  //     updateBtn.addEventListener('click', async () => {
-  //       const cartItems = document.querySelectorAll('cart-item');
-  //       for (const cartItem of cartItems) {
-  //         const lineIndex = cartItem.getAttribute('line-index');
-  //         const quantity = cartItem.currentQuantity;
-  //         await changeLineItem(lineIndex, quantity);
-  //       }
-  //     });
-  //   } else {
-  //     showToast({ type: 'danger', message: 'Update cart button not found!' });
-  //   }
+  // document.addEventListener('remove-item', (event) => {
+  //   const { lineIndex } = event.detail;
+  //   changeLineItem(lineIndex, 0);
   // });
 
-  updateBtn.addEventListener('click', async () => {
-    const cartItems = document.querySelectorAll('cart-item');
-    let updated = false;
+  document.addEventListener('remove-item', async (event) => {
+    const { lineIndex } = event.detail;
 
-    for (const cartItem of cartItems) {
-      const lineIndex = cartItem.getAttribute('line-index');
-      const newQuantity = cartItem.currentQuantity;
-      const currentQuantity = parseInt(cartItem.getAttribute('quantity'), 10);
-
-      // Only update if quantity actually changed
-      if (newQuantity !== currentQuantity) {
-        await changeLineItem(lineIndex, newQuantity);
-        updated = true;
-      }
+    // Get the product info before removal
+    const cartItem = cartItemsContainer.querySelector(`cart-item[line-index="${lineIndex}"]`);
+    if (!cartItem) {
+      // fallback generic message
+      await changeLineItem(lineIndex, 0);
+      showToast({ type: 'success', message: 'Item removed from cart.' });
+      return;
     }
 
-    if (!updated) {
-      showToast({ type: 'info', message: 'No changes to update.' });
-    }
+    const productTitle = cartItem.getAttribute('product-title');
+    const variantTitle = cartItem.getAttribute('variant-title') || '';
+
+    // Remove the item
+    await changeLineItem(lineIndex, 0);
+
+    // Show detailed toast after removal
+    const message = `Removed "${productTitle}"${variantTitle ? ' - ' + variantTitle : ''} from cart.`;
+    showToast({ type: 'success', message });
   });
+
+  if (updateBtn) {
+    updateBtn.addEventListener('click', async () => {
+      const cartItems = document.querySelectorAll('cart-item');
+      let updated = false;
+
+      for (const cartItem of cartItems) {
+        const lineIndex = cartItem.getAttribute('line-index');
+        const currentQuantity = parseInt(cartItem.getAttribute('quantity'), 10);
+        const newQuantity = cartItem.currentQuantity;
+
+        if (newQuantity !== currentQuantity) {
+          await changeLineItem(lineIndex, newQuantity);
+          updated = true;
+        }
+      }
+
+      if (!updated) {
+        showToast({ type: 'info', message: 'No changes to update.' });
+      }
+    });
+  }
 </script>

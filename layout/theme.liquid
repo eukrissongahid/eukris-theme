@@ -7,23 +7,21 @@
     <meta name='description' content='{{ page_description | escape }}'>
     <link rel='icon' href='{{ 'favicon.ico' | asset_url }}' type='image/x-icon'>
     <link rel='canonical' href='{{ canonical_url }}'>
-    <link
-      href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
-      rel='stylesheet'
-    >
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     {{ content_for_header }}
     <link href='{{ 'application.css' | asset_url }}' rel='stylesheet'>
     <link href='{{ 'fonts.css' | asset_url }}' rel='stylesheet'>
+    <script src="{{ 'constants.js' | asset_url }}" defer></script>
+    <script src='{{ 'app-helpers.js' | asset_url }}' defer></script>
     <script src='{{ 'application.js' | asset_url }}' defer></script>
     <script type='module' src='{{ 'component-carousel.js' | asset_url }}'></script>
+    <script src='{{ 'component-cart-notification.js' | asset_url }}' defer></script>
     <script src='{{ 'component-variant-selector.js' | asset_url }}' defer></script>
     <script src='{{ 'component-cart-item.js' | asset_url }}' defer></script>
     <script src='{{ 'component-cart-footer.js' | asset_url }}' defer></script>
     <script src='{{ 'component-cart-icon.js' | asset_url }}' defer></script>
     <script src='{{ 'component-toast.js' | asset_url }}' defer></script>
     <script src='{{ 'component-loading-bar.js' | asset_url }}' defer></script>
-    <script src='{{ 'app-helpers.js' | asset_url }}' defer></script>
   </head>
   <body class='font-inter'>
     <loading-bar color='#ea580c'></loading-bar>
@@ -37,5 +35,6 @@
       {{ content_for_layout }}
     </main>
     {% section 'template-footer' %}
+    <cart-notification></cart-notification>
   </body>
 </html>

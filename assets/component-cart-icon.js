@@ -70,7 +70,7 @@ class CartIcon extends HTMLElement {
 
   async update() {
     try {
-      const res = await fetch('/cart.js');
+      const res = await fetch(SHOPIFY_CONSTANTS.ROUTES.CART);
       const cart = await res.json();
       const badge = this.shadowRoot.getElementById('badge');
       if (cart.item_count > 0) {

@@ -220,44 +220,6 @@ class ProductVariantSelector extends HTMLElement {
     this.updateSelectedVariantAndPrice();
   }
 
-  // // Builds the option dropdowns dynamically based on available variants
-  // renderSelectors() {
-  //   const container = this.getVariantSelectorsContainer();
-  //   container.innerHTML = '';
-  //   console.log("variants on render ", this.variants);
-  //   const firstVariant = this.variants[0] || null;
-
-  //   this.options.forEach((optionName, idx) => {
-  //     const wrapperDiv = document.createElement('div');
-  //     const label = document.createElement('label');
-  //     label.textContent = optionName;
-  //     label.htmlFor = `option-select-${idx}`;
-
-  //     const select = document.createElement('select');
-  //     select.id = `option-select-${idx}`;
-  //     select.dataset.optionIndex = idx.toString();
-
-  //     // Extract unique option values for each option group (e.g., ["Red", "Blue"])
-  //     const uniqueValues = [...new Set(this.variants.map((v) => v.options[idx]))];
-  //     uniqueValues.forEach((value) => {
-  //       const option = document.createElement('option');
-  //       option.value = value;
-  //       option.textContent = value;
-  //       if (firstVariant && firstVariant.options[idx] === value) {
-  //         option.selected = true;
-  //       }
-  //       select.appendChild(option);
-  //     });
-
-  //     // Update selection and price when a dropdown value changes
-  //     select.addEventListener('change', () => this.updateSelectedVariantAndPrice());
-
-  //     wrapperDiv.appendChild(label);
-  //     wrapperDiv.appendChild(select);
-  //     container.appendChild(wrapperDiv);
-  //   });
-  // }
-
   // Reads selected option values from the dropdowns
   getSelectedOptions() {
     return Array.from(this.shadowRoot.querySelectorAll('select')).map((select) => select.value);
