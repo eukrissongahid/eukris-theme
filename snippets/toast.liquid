@@ -1,0 +1,17 @@
+<div
+  class='mb-2 flex items-center rounded-lg px-5 py-2.5 shadow-md'
+  role='alert'
+  tabindex='0'
+  aria-live='assertive'
+  aria-atomic='true'
+  style='background-color: {{ bg }}; color: {{ text }}; border-left: 4px solid {{ border }};'
+>
+  <div class='flex-grow text-sm leading-5 select-text'>{{ message }}</div>
+  <button
+    type='button'
+    class='ml-auto cursor-pointer text-xl opacity-60 transition-opacity duration-200 select-none hover:opacity-100 focus:opacity-100'
+    aria-label='Close toast'
+  >
+    &times;
+  </button>
+</div>

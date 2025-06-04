@@ -1,7 +1,7 @@
 <div class='w-full max-w-[300px] min-w-[260px] px-3 py-6'>
   <div class='flex h-full flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg'>
     <a
-      href='{{ product_product.url }}'
+      href='{{ product_product.variants.first.url }}'
       class='relative block h-60 w-full overflow-hidden border-b border-gray-300 bg-gray-50'
     >
       {% if product_product.featured_image %}
@@ -18,7 +18,8 @@
         </div>
       {% endif %}
 
-      {% if product_product.compare_at_price > product_product.price %}
+      {% if product_product.variants.first.compare_at_price > product_product.variants.first.price
+      %}
         <span class='absolute top-2 left-2 rounded bg-orange-500 px-2 py-1 text-xs font-bold text-white shadow-lg'>
           Sale
         </span>
@@ -27,7 +28,7 @@
 
     <div class='flex min-h-[135px] flex-grow flex-col p-4'>
       <a
-        href='{{ product_product.url }}'
+        href='{{ product_product.variants.first.url }}'
         class='line-clamp-2 text-lg font-semibold text-gray-900 uppercase transition hover:text-orange-600'
         title='{{ product_product.title }}'
       >
@@ -35,25 +36,26 @@
       </a>
 
       <a
-        href='{{ product_product.url }}'
+        href='{{ product_product.variants.first.url }}'
         class='mt-1 line-clamp-3 flex-grow text-xs font-light text-gray-600'
       >
         {{ product_product.description }}
       </a>
 
       <div class='mt-4'>
-        {% if product_product.compare_at_price > product_product.price %}
+        {% if product_product.variants.first.compare_at_price > product_product.variants.first.price
+        %}
           <div class='flex items-center space-x-2'>
-            <span class='text-sm text-gray-500 line-through'
-              >${{ product_product.compare_at_price | money_without_currency }}
+            <span class='text-sm text-gray-500 line-through'>
+              {{- product_product.variants.first.compare_at_price | money }}
             </span>
-            <span class='text-lg font-bold text-orange-600'
-              >${{ product_product.price | money_without_currency }}
+            <span class='text-lg font-bold text-orange-600'>
+              {{- product_product.variants.first.price | money }}
             </span>
           </div>
         {% else %}
           <p class='text-lg font-semibold text-gray-900'>
-            ${{ product_product.price | money_without_currency }}
+            {{ product_product.variants.first.price | money }}
           </p>
         {% endif %}
       </div>

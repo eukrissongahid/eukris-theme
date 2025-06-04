@@ -1,0 +1,30 @@
+<div class='flex flex-col gap-4 md:flex-row'>
+  <div class='h-[400px] max-h-[400px] min-h-[400px] w-[400px] max-w-[400px] min-w-[400px] overflow-hidden rounded-lg border border-gray-200 shadow-sm'>
+    <img
+      id='mainImage'
+      src='{% assign first_image = product.media | where: 'media_type', 'image' | first %}{{ first_image | image_url: width: 800 }}'
+      alt='{% if first_image %}{{ first_image.alt | escape }}{% else %}Product Image{% endif %}'
+      class='h-full w-full object-cover'
+    >
+  </div>
+  <div class='w-full md:w-[130px]'>
+    <div
+      class='flex h-full w-full gap-6.5 overflow-x-auto scroll-smooth pt-2 md:flex-col md:overflow-x-hidden md:overflow-y-auto md:pt-0'
+      style='-webkit-overflow-scrolling: touch;'
+    >
+      {% for media in product.media %}
+        {% if media.media_type == 'image' %}
+          <div class='thumb w-[100px] flex-none cursor-pointer rounded-md border border-gray-200 shadow-sm {% if forloop.first %}active{% endif %}'>
+            <img
+              src='{{ media | image_url: width: 150 }}'
+              alt='{{ media.alt | escape }}'
+              data-large='{{ media | image_url: width: 800 }}'
+              data-media-id='{{ media.id }}'
+              class='block h-[100px] w-[100px] rounded-md object-cover'
+            >
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

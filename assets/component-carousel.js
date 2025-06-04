@@ -1,41 +1,23 @@
-/**
- * Custom element representing a shop carousel component.
- * Supports autoplay, manual navigation, touch/swipe, and responsive heights.
- *
- * Attributes:
- * @attribute {string} data-slides - JSON string representing an array of slide objects:
- *   [{ image: string, alt?: string, link?: string }, ...]
- * @attribute {string} data-autoplay - "true" enables autoplay, otherwise disabled.
- * @attribute {number} data-speed - Autoplay speed interval in ms (default: ShopCarousel.DEFAULT_AUTOPLAY_SPEED_MS).
- */
 class ShopCarousel extends HTMLElement {
-  /** Duration of slide transition animation in milliseconds */
   static SLIDE_TRANSITION_DURATION_MS = 500;
-  /** Minimum swipe distance in pixels to trigger slide change */
+
   static TOUCH_SWIPE_THRESHOLD_PX = 50;
-  /** Default autoplay speed in milliseconds */
+
   static DEFAULT_AUTOPLAY_SPEED_MS = 5000;
-  /** Default carousel height in pixels */
+
   static DEFAULT_CAROUSEL_HEIGHT_PX = 400;
-  /** Carousel heights by viewport breakpoint */
-  /** Carousel heights by viewport breakpoint in pixels */
+
   static CAROUSEL_HEIGHTS_BY_BREAKPOINT = {
-    mobile: 200, // <= 480px
-    tablet: 250, // <= 768px
-    desktop: 400, // default
-    largeDesktop: 600, // >= 1400px
-    ultraWide: 800 // >= 1920px
+    mobile: 200,
+    tablet: 250,
+    desktop: 400,
+    largeDesktop: 600,
+    ultraWide: 800
   };
-  /** Navigation button size in pixels */
   static NAV_BUTTON_SIZE_PX = 40;
-  /** Navigation button background opacity */
   static NAV_BUTTON_BG_OPACITY = 0.4;
-  /** Navigation button font size in rem */
   static NAV_BUTTON_FONT_SIZE_REM = 1.5;
 
-  /**
-   * Creates a new ShopCarousel instance and initializes state.
-   */
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -46,15 +28,10 @@ class ShopCarousel extends HTMLElement {
     this.isTransitioning = false;
   }
 
-  /**
-   * Called when the element is added to the document.
-   * Parses data attributes, initializes autoplay, renders slides, and sets up event handlers.
-   */
   connectedCallback() {
     if (this.hasConnected) return;
     this.hasConnected = true;
 
-    // Parse slides JSON safely from data attribute
     let slides = [];
     try {
       slides = JSON.parse(this.dataset.slides ?? '[]');
@@ -80,11 +57,6 @@ class ShopCarousel extends HTMLElement {
     if (autoplay) this.startAutoScroll(speed);
   }
 
-  /**
-   * Escapes special HTML characters in a string to prevent XSS.
-   * @param {string|null|undefined} str - Input string to escape
-   * @returns {string} Escaped string safe for HTML
-   */
   escapeHTML(str) {
     return (
       str?.replace(
@@ -101,15 +73,9 @@ class ShopCarousel extends HTMLElement {
     );
   }
 
-  /**
-   * Renders the carousel UI with given slides.
-   * @param {Array<{image:string, alt?:string, link?:string}>} slides - Array of slide data objects
-   */
   render(slides) {
-    // Append first slide at the end for seamless looping
     const slidesWithDuplicate = [...slides, slides[0]];
 
-    // Define styles including responsive container heights and navigation buttons
     const style = `
       <style>
         :host {
@@ -200,7 +166,6 @@ class ShopCarousel extends HTMLElement {
       </style>
     `;
 
-    // Build slide HTML with optional links and escaped attributes for safety
     const slidesHtml = slidesWithDuplicate
       .map(({ image, alt, link }) => {
         const escapedImage = image
@@ -212,7 +177,6 @@ class ShopCarousel extends HTMLElement {
       })
       .join('');
 
-    // Insert the carousel HTML into shadow DOM
     this.shadowRoot.innerHTML = `
       ${style}
       <div class="carousel-container" tabindex="0">
@@ -222,25 +186,21 @@ class ShopCarousel extends HTMLElement {
       </div>
     `;
 
-    // Cache DOM references and initialize state
     this.slidesEl = this.shadowRoot.querySelector('.slides');
     this.prevBtn = this.shadowRoot.querySelector('.prev');
     this.nextBtn = this.shadowRoot.querySelector('.next');
     this.totalSlides = slides.length;
     this.currentIndex = 0;
 
-    // Attach click event listeners to nav buttons
     this.prevBtn.addEventListener('click', () => this.changeSlide(-1));
     this.nextBtn.addEventListener('click', () => this.changeSlide(1));
 
-    // Disable nav buttons while slide transition is active
     this.slidesEl.addEventListener('transitionstart', () => {
       this.isTransitioning = true;
       this.prevBtn.disabled = true;
       this.nextBtn.disabled = true;
     });
 
-    // Handle looping back to start when last slide finishes transition
     this.slidesEl.addEventListener('transitionend', () => {
       this.isTransitioning = false;
       this.prevBtn.disabled = false;
@@ -250,22 +210,16 @@ class ShopCarousel extends HTMLElement {
         this.slidesEl.style.transition = 'none';
         this.currentIndex = 0;
         this.slidesEl.style.transform = `translateX(-${this.currentIndex * 100}%)`;
-        // Force reflow to reset transition
+
         void this.slidesEl.offsetWidth;
         this.slidesEl.style.transition = `transform ${ShopCarousel.SLIDE_TRANSITION_DURATION_MS}ms ease`;
       }
     });
   }
 
-  /**
-   * Changes the current slide by a given direction.
-   * Handles edge cases for infinite looping.
-   * @param {number} direction - 1 for next slide, -1 for previous slide
-   */
   changeSlide(direction) {
     if (this.isTransitioning) return;
 
-    // Handle seamless backward looping when on first slide and going previous
     if (direction === -1 && this.currentIndex === 0) {
       this.isTransitioning = true;
       this.prevBtn.disabled = true;
@@ -274,7 +228,7 @@ class ShopCarousel extends HTMLElement {
       this.slidesEl.style.transition = 'none';
       this.currentIndex = this.totalSlides;
       this.slidesEl.style.transform = `translateX(-${this.currentIndex * 100}%)`;
-      void this.slidesEl.offsetWidth; // Force reflow
+      void this.slidesEl.offsetWidth;
 
       this.slidesEl.style.transition = `transform ${ShopCarousel.SLIDE_TRANSITION_DURATION_MS}ms ease`;
       this.currentIndex = this.totalSlides - 1;
@@ -296,7 +250,6 @@ class ShopCarousel extends HTMLElement {
 
     this.currentIndex += direction;
 
-    // Adjust currentIndex for infinite looping including duplicated last slide
     if (this.currentIndex > this.totalSlides) {
       this.currentIndex = 0;
     } else if (this.currentIndex < 0) {
@@ -311,18 +264,10 @@ class ShopCarousel extends HTMLElement {
     }
   }
 
-  /**
-   * Starts automatic slide scrolling at the specified speed interval.
-   * @param {number} speed - Interval speed in milliseconds
-   */
   startAutoScroll(speed) {
     this.intervalId = setInterval(() => this.changeSlide(1), speed);
   }
 
-  /**
-   * Adds keyboard navigation support for accessibility.
-   * Left and Right arrow keys navigate slides.
-   */
   addKeyboardNavigation() {
     this.shadowRoot.querySelector('.carousel-container').addEventListener(
       'keydown',
@@ -334,9 +279,6 @@ class ShopCarousel extends HTMLElement {
     );
   }
 
-  /**
-   * Adds touch event support to enable swipe gesture navigation.
-   */
   addTouchSupport() {
     const container = this.shadowRoot.querySelector('.carousel-container');
 
@@ -353,10 +295,6 @@ class ShopCarousel extends HTMLElement {
     });
   }
 
-  /**
-   * Called when the element is removed from the document.
-   * Cleans up intervals to avoid memory leaks.
-   */
   disconnectedCallback() {
     if (this.intervalId) clearInterval(this.intervalId);
   }

@@ -1,0 +1,57 @@
+<div
+  id='cart-notif'
+  class='animate-slide-in fixed top-6 left-6 z-[9999] hidden w-[90%] max-w-[350px] overflow-hidden rounded-lg border border-gray-200 bg-white font-sans shadow-[0_10px_25px_rgba(0,0,0,0.2)]'
+>
+  <div class='flex items-center justify-between bg-orange-50 px-4 py-3 text-base font-bold text-orange-600'>
+    <span>Added to cart</span>
+    <button
+      class='close-btn cursor-pointer border-none bg-transparent text-xl text-orange-600'
+      aria-label='Close'
+    >
+      &times;
+    </button>
+  </div>
+  <div class='body flex items-center gap-4 p-4'>
+    <img class='h-16 w-16 rounded-md object-cover' src='' alt='Product image'>
+    <div class='details flex-1'>
+      <div id='cart-notif-name' class='name mb-1 text-[0.95rem] font-semibold'></div>
+      <div class='variant text-sm text-gray-700'>
+        Variant: <span id='cart-notif-variant' class='variant-info'></span>
+      </div>
+      <div class='added-qty text-sm text-gray-700'>
+        Added: <span id='cart-notif-added-qty' class='added-qty-val'></span>
+      </div>
+      <div class='unit-price text-sm text-gray-700'>
+        Unit Price: <span id='cart-notif-unit-price' class='unit-price-val'></span>
+      </div>
+      <div class='qty text-sm text-gray-700'>
+        Variant Qty In Cart: <span id='cart-notif-cart-qty' class='qty-val'></span>
+      </div>
+      <div class='price text-sm text-gray-700'>
+        Variant Total In Cart: <span id='cart-notif-cart-total' class='price-val'></span>
+      </div>
+      <div class='total-cart-qty text-sm text-gray-700'>
+        Total Items In Cart:
+        <span id='cart-notif-total-qty' class='total-qty-val'>{{ cart.item_count }}</span>
+      </div>
+      <div class='total-cart-price text-sm text-gray-700'>
+        Total Amount In Cart:
+        <span id='cart-notif-total-price' class='total-price-val'>
+          {{- cart.total_price | money -}}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class='actions flex flex-wrap gap-2 p-4'>
+    <a
+      href='/cart'
+      class='cart flex-1 rounded-md bg-orange-400 px-3 py-2 text-center text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-orange-600'
+      >View My Cart</a
+    >
+    <a
+      href='/checkout'
+      class='checkout flex-1 rounded-md bg-black px-3 py-2 text-center text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-neutral-900'
+      >Checkout</a
+    >
+  </div>
+</div>

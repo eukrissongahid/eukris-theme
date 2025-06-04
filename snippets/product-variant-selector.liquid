@@ -1,0 +1,46 @@
+<h1 class='text-2xl font-semibold text-orange-700'>{{ product.title }}</h1>
+<div id='dropdowns_here' class='mt-5'></div>
+<div>
+  <p
+    class='compare-price mt-1 hidden text-base text-gray-500 line-through'
+  ></p>
+  <p
+    class='price mt-2 text-[20px] font-bold text-[#222]'
+  ></p>
+</div>
+<div>
+  <p id='product-compare-price' class='mb-1 text-base text-gray-500 line-through'></p>
+  <p id='product-price' class='text-md font-bold text-red-600'></p>
+</div>
+<div class='quantity-container text-sm text-gray-800'>
+  <label
+    class='mb-1 block text-sm font-semibold'
+  >
+    Quantity:
+  </label>
+  <input
+    id='product-quantity-input'
+    type='number'
+    min='0'
+    value='0'
+    class='quantity-input mb-3 box-border w-full rounded border border-gray-300 px-2 py-1 text-sm'
+  >
+  <span
+    id='product-available-qty'
+    class='available-qty -mt-2 mb-3 block text-xs text-gray-600'
+  ></span>
+</div>
+<div class='flex flex-col gap-3 sm:flex-row'>
+  <button
+    id='product-add-to-cart-btn'
+    class='cursor-pointer rounded bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600'
+  >
+    {{ 'buttons.add_to_cart' | t }}
+  </button>
+  <button
+    id='product-buy-now-btn'
+    class='cursor-pointer rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-900'
+  >
+    {{ 'buttons.buy_now' | t }}
+  </button>
+</div>

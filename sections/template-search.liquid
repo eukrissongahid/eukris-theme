@@ -1,7 +1,6 @@
 <div class='container mx-auto'>
-  <!-- SEARCH FORM -->
   <h1 class='my-4 text-center text-xl uppercase'>{{ 'labels.search_results' | t }}</h1>
-  <div class='flex items-center justify-center'>
+  {% comment %} <div class='flex items-center justify-center'>
     <form
       id='searchForm'
       action='{{ routes.search_url }}'
@@ -22,9 +21,7 @@
         {{ 'buttons.search' | t }}
       </button>
     </form>
-  </div>
-
-  <!-- SEARCH RESULTS -->
+  </div> {% endcomment %}
   <div id='searchResults'>
     {% paginate search.results by 10 %}
       {% if search.performed %}
@@ -35,7 +32,6 @@
               {{ 'labels.results_for_the_search_term' | t }}
               {{ search.terms | escape }}
             </p>
-            <!-- FLEXBOX instead of GRID -->
             <div class='flex flex-wrap justify-center gap-4'>
               {% for item in search.results %}
                 {% case item.object_type %}
@@ -55,46 +51,45 @@
           </div>
         {% endif %}
       {% endif %}
-
       {% render 'pagination', pagination: paginate %}
     {% endpaginate %}
   </div>
 </div>
 
 <script>
-  document.getElementById('searchForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+  // document.getElementById('searchForm').addEventListener('submit', function (e) {
+  //   e.preventDefault();
 
-    const form = e.target;
-    const query = new URLSearchParams(new FormData(form)).toString();
-    const resultsContainer = document.getElementById('searchResults');
+  //   const form = e.target;
+  //   const query = new URLSearchParams(new FormData(form)).toString();
+  //   const resultsContainer = document.getElementById('searchResults');
 
-    fetch(`${form.action}?${query}`)
-      .then((res) => res.text())
-      .then((html) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newResults = doc.querySelector('#searchResults');
+  //   fetch(`${form.action}?${query}`)
+  //     .then((res) => res.text())
+  //     .then((html) => {
+  //       const parser = new DOMParser();
+  //       const doc = parser.parseFromString(html, 'text/html');
+  //       const newResults = doc.querySelector('#searchResults');
 
-        if (newResults) {
-          const productCards = newResults.querySelectorAll('.product-card');
-          if (productCards.length > 0) {
-            resultsContainer.innerHTML = newResults.innerHTML;
-          } else {
-            resultsContainer.innerHTML = `
-              <div class='my-10 text-center'>
-                <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
-              </div>`;
-          }
-        } else {
-          resultsContainer.innerHTML = `
-            <div class='my-10 text-center'>
-              <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
-            </div>`;
-        }
-      })
-      .catch((err) => {
-        showToast({ type: 'danger', message: `Search failed: ${err}` });
-      });
-  });
+  //       if (newResults) {
+  //         const productCards = newResults.querySelectorAll('.product-card');
+  //         if (productCards.length > 0) {
+  //           resultsContainer.innerHTML = newResults.innerHTML;
+  //         } else {
+  //           resultsContainer.innerHTML = `
+  //             <div class='my-10 text-center'>
+  //               <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
+  //             </div>`;
+  //         }
+  //       } else {
+  //         resultsContainer.innerHTML = `
+  //           <div class='my-10 text-center'>
+  //             <p>No results found for the search term: "${form.q.value}". Try a different keyword.</p>
+  //           </div>`;
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       showToast({ type: 'danger', message: `Search failed: ${err}` });
+  //     });
+  // });
 </script>

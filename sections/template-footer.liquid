@@ -8,12 +8,11 @@
         {% if section.settings.logo != blank %}
           <img src='{{ section.settings.logo | img_url: 'medium' }}' class='h-8' alt='Logo'>
         {% endif %}
-        <span class='self-center text-2xl font-semibold whitespace-nowrap dark:text-white'>
+        <span class='self-center text-2xl font-semibold whitespace-nowrap text-white'>
           {{ section.settings.footer_logo_text }}
         </span>
       </a>
-
-      <ul class='mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400'>
+      <ul class='mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 sm:mb-0'>
         {% for link in section.blocks %}
           <li>
             <a href='{{ link.settings.url }}' class='me-4 hover:underline md:me-6'>
@@ -23,13 +22,13 @@
         {% endfor %}
       </ul>
     </div>
-    <hr class='my-6 border-gray-200 sm:mx-auto lg:my-8 dark:border-gray-700'>
-    <span class='block text-center text-sm text-gray-500 dark:text-gray-400'>
+    <hr class='my-6 border-gray-700 sm:mx-auto lg:my-8'>
+    <span class='block text-center text-sm text-gray-500 '>
       © {{ 'now' | date: '%Y' }}
       <a href='{{ section.settings.logo_link }}' class='hover:underline'>
         {{ section.settings.copyright_name }}
       </a>
-      {{- 'labels.alright_reserved_sufix' | t }}
+      {{ 'labels.alright_reserved_sufix' | t }}
     </span>
   </div>
 </footer>

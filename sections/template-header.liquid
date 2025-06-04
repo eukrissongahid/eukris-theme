@@ -3,7 +3,6 @@
 <div class='relative z-20 bg-white' id='header-wrapper'>
   <div class='mx-auto px-4 sm:px-6'>
     <div class='flex items-center pt-3 pb-6 md:justify-start md:space-x-10'>
-      <!-- STORE NAME / STORE LOGO -->
       <div class='flex items-center justify-start truncate lg:flex-1'>
         <a
           href='{{ section.settings.logo_link | default: '/' }}'
@@ -21,8 +20,6 @@
           </h1>
         </a>
       </div>
-
-      <!-- MOBILE SEARCH BUTTON -->
       <div class='ml-auto md:hidden'>
         <button
           type='button'
@@ -31,8 +28,6 @@
           {% render 'icon-search' %}
         </button>
       </div>
-
-      <!-- MOBILE MENU OPEN BUTTON -->
       <div class='-my-2 -mr-2 md:hidden'>
         <button
           id='mobile-menu-open'
@@ -42,8 +37,6 @@
           {% render 'icon-menu' %}
         </button>
       </div>
-
-      <!-- DESKTOP NAVIGATION MENU -->
       <nav class='hidden space-x-10 md:flex'>
         {% for link in main_menu_linklist %}
           {% if link.links != blank %}
@@ -86,8 +79,6 @@
           {% endif %}
         {% endfor %}
       </nav>
-
-      <!-- RIGHT SIDE ICONS -->
       <div class='hidden items-center justify-end space-x-5 md:flex md:flex-1'>
         <button
           type='button'
@@ -95,19 +86,16 @@
         >
           {% render 'icon-search' %}
         </button>
-        <cart-icon></cart-icon>
+        <test-component-cart-icon>{% render 'cart-icon' %}</test-component-cart-icon>
       </div>
     </div>
   </div>
-
-  <!-- MOBILE MENU -->
   <div
     id='mobile-menu'
     class='absolute inset-x-0 top-0 z-10 hidden origin-top-left transform p-2 md:hidden'
   >
     <div class='w-full rounded-md border border-gray-300 bg-white shadow-lg'>
       <div class='divide-y-2 divide-gray-50 p-5'>
-        <!-- MOBILE MENU HEADER TITLE + CLOSE BUTTON -->
         <div class='flex items-center justify-between pb-3'>
           <h1 class='text-lg text-gray-500'>{{ section.settings.mobile_menu_title }}</h1>
           <button
@@ -118,8 +106,6 @@
             {% render 'icon-close' %}
           </button>
         </div>
-
-        <!-- MOBILE NAVIGATION LINKS -->
         <nav class='grid gap-y-7 pt-3'>
           {% for link in main_menu_linklist %}
             {% assign mobile_submenu_id = 'mobile-submenu-' | append: forloop.index %}
@@ -157,8 +143,6 @@
       </div>
     </div>
   </div>
-
-  <!-- SEARCH BAR -->
   <div
     id='search-bar'
     class='absolute top-0 hidden w-full border border-gray-300 bg-white px-5'
@@ -242,12 +226,8 @@
         }
       });
     }
-
-    // Mobile menu open/close
     toggleVisibilityOnClick('mobile-menu-open', 'mobile-menu', true);
     toggleVisibilityOnClick('mobile-menu-close', 'mobile-menu', false);
-
-    // Search bar open/close
     document.querySelectorAll('.search-bar-open').forEach((button) => {
       const target = document.getElementById('search-bar');
       if (!target) return;
@@ -258,8 +238,6 @@
     });
 
     toggleVisibilityOnClick('search-bar-close', 'search-bar', false);
-
-    // Generic toggle function for dropdowns
     function setupToggleButtons(selector) {
       document.querySelectorAll(selector).forEach((button) => {
         const targetId = button.getAttribute('data-target');
@@ -272,14 +250,8 @@
         });
       });
     }
-
-    // Desktop dropdown toggles
     setupToggleButtons('.menu-dropdown-toggle');
-
-    // Mobile submenu toggles
     setupToggleButtons('.mobile-submenu-toggle');
-
-    // Close desktop dropdowns on clicking outside
     document.addEventListener('click', () => {
       document.querySelectorAll('[id^="submenu-"]').forEach((submenu) => {
         submenu.classList.add('hidden');

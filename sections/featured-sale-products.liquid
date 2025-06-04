@@ -1,17 +1,14 @@
 <div class='my-8 flex flex-col items-center py-20'>
   <h1 class='mb-7 text-center text-3xl uppercase'>{{ section.settings.title }}</h1>
-
   <div class='mx-auto max-w-7xl'>
     <div class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
       {% assign sale_products = collections[section.settings.featured_sale_collection].products
         | where: 'compare_at_price'
         | where: 'available', true
       %}
-
       {% for product in sale_products %}
         {% assign original_price = product.compare_at_price | default: 0 %}
         {% assign current_price = product.price | default: 0 %}
-
         {% if original_price > current_price and original_price > 0 %}
           {% assign discount = 100
             | times: current_price
@@ -24,7 +21,6 @@
           {% endif %}
         {% endif %}
       {% endfor %}
-
       {% if sale_products.size == 0 %}
         {% for item in (1..4) %}
           {% render 'product-card-placeholder' %}

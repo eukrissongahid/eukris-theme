@@ -11,30 +11,47 @@
     {{ content_for_header }}
     <link href='{{ 'application.css' | asset_url }}' rel='stylesheet'>
     <link href='{{ 'fonts.css' | asset_url }}' rel='stylesheet'>
-    <script src="{{ 'constants.js' | asset_url }}" defer></script>
+    <script src='{{ 'constants.js' | asset_url }}' defer></script>
     <script src='{{ 'app-helpers.js' | asset_url }}' defer></script>
     <script src='{{ 'application.js' | asset_url }}' defer></script>
     <script type='module' src='{{ 'component-carousel.js' | asset_url }}'></script>
-    <script src='{{ 'component-cart-notification.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-variant-selector.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-cart-item.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-cart-footer.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-cart-icon.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-toast.js' | asset_url }}' defer></script>
-    <script src='{{ 'component-loading-bar.js' | asset_url }}' defer></script>
+    <script
+      type='module'
+      src='{{ 'test-component-cart-notification.js' | asset_url }}'
+      defer
+    ></script>
+    <script
+      type='module'
+      src='{{ 'test-component-variant-selector.js' | asset_url }}'
+      defer
+    ></script>
+    <script
+      type='module'
+      src='{{ 'test-component-product-image-gallery.js' | asset_url }}'
+      defer
+    ></script>
+    <script
+      type='module'
+      src='{{ 'test-component-collection-filters.js' | asset_url }}'
+      defer
+    ></script>
+    <script
+      type='module'
+      src='{{ 'test-component-product-grid.js' | asset_url }}'
+      defer
+    ></script>
+    <script type='module' src='{{ 'test-component-cart.js' | asset_url }}' defer></script>
+    <script type='module' src='{{ 'test-component-cart-icon.js' | asset_url }}' defer></script>
   </head>
   <body class='font-inter'>
-    <loading-bar color='#ea580c'></loading-bar>
     <div
       id='toast-container'
-      class='w-full px-2'
-      style='position: fixed; top: 0.5rem; z-index: 9999;'
+      class='fixed top-0 left-0 z-50 w-full px-4 py-2'
     ></div>
     {% section 'template-header' %}
     <main role='main' class='min-h-full'>
       {{ content_for_layout }}
     </main>
     {% section 'template-footer' %}
-    <cart-notification></cart-notification>
   </body>
 </html>

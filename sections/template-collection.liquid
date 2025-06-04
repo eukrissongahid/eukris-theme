@@ -1,0 +1,27 @@
+<div class='p-4 lg:p-8'>
+  <div class='flex min-h-screen flex-col lg:flex-row'>
+    <collection-filters>
+      {% render 'collection-filters' %}
+    </collection-filters>
+
+    <collection-grid>
+      {% render 'collection-product-grid',
+        number_of_product_per_page: section.settings.number_of_product_per_page
+      %}
+    </collection-grid>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Layout",
+  "settings": [
+    {
+      "type": "number",
+      "id": "number_of_product_per_page",
+      "default": 4,
+      "label": "Number of products per page"
+    }
+  ]
+}
+{% endschema %}

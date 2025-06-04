@@ -1,0 +1,111 @@
+<div id='cart-content' class='p-4' style='{% if cart.item_count == 0 %}display:none;{% endif %}'>
+  <div class='mx-auto my-10 flex max-w-6xl flex-col'>
+    <div class='my-5 flex items-end justify-between'>
+      <h1 class='text-3xl font-semibold text-orange-700 uppercase'>{{ 'labels.cart' | t }}</h1>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='font-medium text-blue-600 underline hover:text-blue-800'
+      >
+        {{ 'labels.shopping' | t }}
+      </a>
+    </div>
+  </div>
+  <div class='mx-auto my-10 flex max-w-6xl flex-col'>
+    <form action='{{ routes.cart_url }}' method='post' novalidate>
+      <div class='mb-2 hidden border-b border-orange-400 font-medium text-gray-500 md:flex'>
+        <div class='flex-grow px-4 py-2'>{{ 'labels.item' | t }}</div>
+        <div class='w-32 px-4 py-2'>{{ 'labels.quantity' | t }}</div>
+        <div class='w-32 px-4 py-2'>{{ 'labels.total_col' | t }}</div>
+        <div class='w-12 px-4 py-2'></div>
+      </div>
+      <div id='cart-items' class='divide-y divide-orange-400'></div>
+      <div class='flex flex-col items-center justify-between px-2 sm:px-4 md:flex-row'>
+        <div class='my-4 w-full'>
+          <div class='flex flex-col items-start'>
+            <label for='cart_notes' class='my-1'>{{ 'labels.cart_notes' | t }}</label>
+            <textarea
+              name='note'
+              id='cart_notes'
+              class='h-20 w-full resize-none rounded-sm border border-gray-300 p-2 outline-none md:max-w-lg'
+            ></textarea>
+          </div>
+        </div>
+        <div class='my-4 w-full md:w-80'>
+          <p class='mb-4 text-sm text-gray-600'>
+            {{ 'labels.discount_code_description' | t }}
+          </p>
+          {% assign subtotal = cart.subtotal_price
+            | default: cart.items_subtotal_price
+            | default: cart.total_price
+          %}
+          <h3 class='text-xl' id='subtotal-price'>
+            {{ 'labels.subtotal' | t }}
+            {{ subtotal | money }}
+          </h3>
+          {% if cart.tax_lines.size > 0 %}
+            <p class='mt-2 text-sm' id='tax-price'>
+              {{ 'labels.tax' | t }}
+              {{ cart.total_tax | money }}
+            </p>
+            <p class='text-lg font-semibold' id='total-price'>
+              {{ 'labels.total' | t }}
+              {{ cart.total_price | money }}
+            </p>
+          {% else %}
+            <p class='mt-2 text-sm text-gray-500'>
+              {{ 'labels.taxes_and_shipping_description' | t }}
+            </p>
+          {% endif %}
+          <div class='my-2'>
+            <button
+              id='update-cart-button'
+              type='button'
+              name='update'
+              class='w-full cursor-pointer rounded bg-orange-500 px-4 py-2 font-medium text-white hover:bg-orange-600'
+            >
+              {{ 'buttons.update' | t }}
+            </button>
+          </div>
+          <div class='my-2'>
+            <button
+              type='submit'
+              name='checkout'
+              class='w-full cursor-pointer rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-900'
+            >
+              {{ 'buttons.checkout' | t }}
+            </button>
+            <div class='mt-2 flex items-center gap-2 text-sm text-gray-500'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                class='h-4 w-4 text-green-600'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zM5 13h14v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6z" />
+              </svg>
+              <span>{{ 'labels.secure_checkout' | t }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div
+  id='empty-cart-message'
+  class='mx-auto my-4 flex h-60 max-w-6xl items-center justify-center'
+  style='{% if cart.item_count > 0 %}display:none;{% endif %}'
+>
+  <div class='text-center'>
+    <h1 class='my-4 text-3xl'>{{ 'labels.cart_empty' | t }}</h1>
+    <div class='my-4 py-4'>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='rounded-md border border-orange-600 bg-orange-600 px-8 py-3 text-white hover:bg-orange-500'
+      >
+        {{ 'labels.shopping' | t }}
+      </a>
+    </div>
+  </div>
+</div>
