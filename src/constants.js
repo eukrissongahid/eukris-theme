@@ -11,6 +11,6 @@ window.SHOPIFY_CONSTANTS = {
     CHECKOUT_NOW: 'Checkout Now',
     EMPTY_CART_MESSAGE: 'Your cart is currently empty.',
     WELCOME_MESSAGE: 'Welcome to our store!',
-    LOGIN_PROMPT: 'Please login to access your account.',
-  },
+    LOGIN_PROMPT: 'Please login to access your account.'
+  }
 };
