@@ -1,0 +1,11 @@
+import './constants.js';
+import './app-helpers.js';
+import './appEvent.js';
+import './component-carousel.js';
+import './test-component-cart-notification.js';
+import './test-component-variant-selector.js';
+import './test-component-product-image-gallery.js';
+import './test-component-collection-filters.js';
+import './test-component-product-grid.js';
+import './test-component-cart.js';
+import './test-component-cart-icon.js';

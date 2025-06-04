@@ -5,6 +5,7 @@ function formatCurrency(amountInCents, currencyCode = 'PHP', locale = undefined)
   });
   return formatter.format(amountInCents / 100);
 }
+window.formatCurrency = formatCurrency;
 
 function showToast({ type = 'success', message = '', duration = 4000 }) {
   const colors = {
@@ -49,6 +50,7 @@ function showToast({ type = 'success', message = '', duration = 4000 }) {
     toast.remove();
   }, duration);
 }
+window.showToast = showToast;
 
 function initSearchFormHandler() {
   const form = document.getElementById('searchForm');
@@ -90,6 +92,7 @@ function initSearchFormHandler() {
       });
   });
 }
+window.initSearchFormHandler = initSearchFormHandler;
 
 function toggleVisibilityOnClick(buttonId, targetId, show = true) {
   const button = document.getElementById(buttonId);
@@ -104,6 +107,7 @@ function toggleVisibilityOnClick(buttonId, targetId, show = true) {
     }
   });
 }
+window.toggleVisibilityOnClick = toggleVisibilityOnClick;
 
 function setupToggleButtons(selector) {
   document.querySelectorAll(selector).forEach((button) => {
@@ -117,6 +121,7 @@ function setupToggleButtons(selector) {
     });
   });
 }
+window.setupToggleButtons = setupToggleButtons;
 
 function initUIInteractions() {
   toggleVisibilityOnClick('mobile-menu-open', 'mobile-menu', true);
@@ -142,6 +147,7 @@ function initUIInteractions() {
     });
   });
 }
+window.initUIInteractions = initUIInteractions;
 
 document.addEventListener('DOMContentLoaded', () => {
   initUIInteractions();

@@ -1,7 +1,6 @@
 <main class='w-full bg-white p-4 lg:flex-1'>
   <div class='h-full w-full bg-white p-4 lg:p-6'>
     <div id='ProductGrid' class='mx-auto'>
-      {% comment %} {% assign per_page = number_of_product_per_page | default: 4 %} {% endcomment %}
       {% paginate collection.products by 4 %}
         <h1 class='mb-8 text-3xl font-semibold text-orange-600'>{{ collection.title }}</h1>
         <div class='flex flex-wrap justify-center gap-4 md:justify-start'>
