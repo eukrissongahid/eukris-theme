@@ -32,7 +32,12 @@ class TestCartNotification extends HTMLElement {
       this.hideNotification();
     }
 
-    if (event.target.matches('.cart') || event.target.matches('.checkout')) {
+    if (event.target.matches('.cart')) {
+      this.hideNotification();
+    }
+
+    if (event.target.matches('#cart-notif-checkout')) {
+      this.checkoutSingleItem();
       this.hideNotification();
     }
   }
@@ -78,47 +83,28 @@ class TestCartNotification extends HTMLElement {
     }
   }
 
+  checkoutSingleItem() {
+    const variantId = this.lastAddedVariantId;
+    const quantity = this.lastAddedQty || 1;
+
+    if (!variantId) {
+      console.warn('[TestCartNotification] No variant ID found for checkout.');
+      return;
+    }
+
+    const checkoutUrl = `https://${window.location.hostname}/cart/${variantId}:${quantity}`;
+    window.location.href = checkoutUrl;
+  }
+
   async updateInformation(event) {
     const { item, addedQty } = event.detail;
     if (!item) return;
 
     try {
+      this.lastAddedVariantId = item.variant_id;
+      this.lastAddedQty = addedQty || 1;
+
       await this.loadSection();
-
-      if (!this.notificationContainerEl) return;
-
-      if (this.itemImgEl && item.image) {
-        this.itemImgEl.src = item.image;
-        this.itemImgEl.alt = item.product_title || 'Product image';
-      }
-
-      if (this.itemNameEl) {
-        this.itemNameEl.textContent = item.product_title || 'Product Name';
-      }
-
-      if (this.itemVariantEl) {
-        this.itemVariantEl.textContent = item.variant_title || 'Default variant';
-      }
-
-      if (this.itemAddedQtyEl) {
-        this.itemAddedQtyEl.textContent = `+${addedQty || 1}`;
-      }
-
-      if (this.itemUnitPriceEl) {
-        this.itemUnitPriceEl.textContent = formatCurrency(item.price || 0, item.currency || 'PHP');
-      }
-
-      if (this.itemCartQtyEl) {
-        this.itemCartQtyEl.textContent = item.quantity || 0;
-      }
-
-      if (this.itemCartTotalPriceEl) {
-        this.itemCartTotalPriceEl.textContent = formatCurrency(
-          item.final_line_price || 0,
-          item.currency || 'PHP'
-        );
-      }
-
       this.showNotification();
     } catch (err) {
       console.error('[TestCartNotification] updateInformation error:', err);

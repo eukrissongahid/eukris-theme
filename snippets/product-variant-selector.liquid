@@ -1,5 +1,28 @@
 <h1 class='text-2xl font-semibold text-orange-700'>{{ product.title }}</h1>
-<div id='dropdowns_here' class='mt-5'></div>
+<div id='dropdowns_here' class='mt-5'>
+  {% for option_index in (0..product.options.size) %}
+    {% assign option_name = product.options[option_index] %}
+    {% if option_name %}
+      <label
+        for='option-select-{{ option_index }}'
+        class='mb-1 block text-sm font-semibold text-gray-700'
+      >
+        {{ option_name }}
+      </label>
+      <select
+        id='option-select-{{ option_index }}'
+        name='option-{{ option_index }}'
+        class='mb-3 w-full rounded border border-gray-300 px-2 py-1 text-sm'
+      >
+        <option value='' disabled selected>-- Select --</option>
+        {% assign option_values = product.options_with_values[option_index].values %}
+        {% for value in option_values %}
+          <option value='{{ value | escape }}'>{{ value }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+  {% endfor %}
+</div>
 <div>
   <p
     class='compare-price mt-1 hidden text-base text-gray-500 line-through'

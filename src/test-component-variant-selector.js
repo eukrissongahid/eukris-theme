@@ -52,67 +52,36 @@ class TestProductVariantSelector extends HTMLElement {
       this.buyNowBtnEl = this.querySelector('#product-buy-now-btn');
       this.availableQntyLabelEl = this.querySelector('#product-available-qty');
 
-      this.renderOptions();
+      this.setupSelectListeners();
       this.setupButtonsListener();
 
       if (this.variantIdFromUrl) {
-        this.updateAvailabilityById(this.variantIdFromUrl);
+        this.setSelectedOptionsByVariantId(this.variantIdFromUrl);
       }
     } catch (err) {
       console.error('[TestProductVariantSelector] loadSection error:', err);
     }
   }
 
-  renderOptions() {
-    if (!this.variantsAtrrib.length || !this.optionsAtrrib.length) {
-      console.warn('[TestProductVariantSelector] No variants or options data provided');
-      return;
-    }
-
-    const container = this.querySelector('#dropdowns_here');
-    if (!container) return;
-
-    container.innerHTML = '';
-    this.selectChangeListeners = [];
-
-    this.optionsAtrrib.forEach((optionName, index) => {
-      const values = [...new Set(this.variantsAtrrib.map((v) => v.options[index]))];
-
-      const label = document.createElement('label');
-      label.setAttribute('for', `option-select-${index}`);
-      label.textContent = optionName;
-      label.className = 'block mb-1 font-semibold text-sm text-gray-700';
-
-      const select = document.createElement('select');
-      select.id = `option-select-${index}`;
-      select.name = `option-${index}`;
-      select.className = 'w-full mb-3 border border-gray-300 rounded px-2 py-1 text-sm';
-
-      values.forEach((value) => {
-        const optionEl = document.createElement('option');
-        optionEl.value = value;
-        optionEl.textContent = value;
-        if (this.getSelectedVariant()?.options[index] === value) optionEl.selected = true;
-        select.appendChild(optionEl);
-      });
-
-      select.addEventListener('change', this.onOptionChangeHandler);
-      this.selectChangeListeners.push({ select, listener: this.onOptionChangeHandler });
-
-      container.append(label, select);
+  setupSelectListeners() {
+    this.optionsAtrrib.forEach((_, i) => {
+      const select = this.querySelector(`#option-select-${i}`);
+      if (select) {
+        select.addEventListener('change', this.onOptionChangeHandler);
+      }
     });
-
-    this.onOptionChange();
   }
 
   onOptionChange() {
-    const selectedOptions = this.optionsAtrrib.map(
-      (_, i) => this.querySelector(`#option-select-${i}`)?.value || null
-    );
+    const selectedOptions = this.optionsAtrrib.map((_, i) => {
+      const select = this.querySelector(`#option-select-${i}`);
+      return select?.value !== '' ? select.value : null;
+    });
 
-    const matchedVariant = this.variantsAtrrib.find((v) =>
-      v.options.every((opt, i) => opt === selectedOptions[i])
-    );
+    const matchedVariant = this.populateSelectsAndFindVariant(selectedOptions, {
+      setSelected: true,
+      disableIfIncomplete: true
+    });
 
     if (matchedVariant) {
       this.variantIdFromUrl = matchedVariant.id;
@@ -197,13 +166,23 @@ class TestProductVariantSelector extends HTMLElement {
         if (!res.ok) throw new Error('Failed to add to cart');
         return res.json();
       })
-      .then(() => fetch('/cart.js'))
+      .then(() => {
+        return fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attributes: {
+              _added_variant: variantId,
+              _added_quantity: quantity
+            }
+          })
+        });
+      })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch cart');
+        if (!res.ok) throw new Error('Failed to update cart attributes');
         return res.json();
       })
       .then((cart) => {
-        const quantity = this.quantityInputEl ? parseInt(this.quantityInputEl.value, 10) : 0;
         AppEvent.emit('product:cart:changed', { count: cart.item_count });
         const matchedItem = cart.items.find((item) => item.id === variantId);
         AppEvent.emit('product:cart:notification:changed', {
@@ -222,10 +201,8 @@ class TestProductVariantSelector extends HTMLElement {
   }
 
   buyNow(variantId, quantity) {
-    const params = new URLSearchParams({
-      items: JSON.stringify([{ id: variantId, quantity }])
-    });
-    window.location.href = `/cart/checkout?${params.toString()}`;
+    const checkoutUrl = `https://${window.location.hostname}/cart/${variantId}:${quantity}`;
+    window.location.href = checkoutUrl;
   }
 
   getVariantIdFromUrl() {
@@ -251,32 +228,119 @@ class TestProductVariantSelector extends HTMLElement {
     }
 
     this.availableQntyLabelEl.classList.toggle('text-gray-900', variant?.available);
-    this.availableQntyLabelEl.classList.toggle('text-gray-500', !variant?.available);
+    this.availableQntyLabelEl.classList.toggle('text-red-600', !variant?.available);
   }
 
   updateQuantityInput(variant) {
     if (!this.quantityInputEl) return;
 
-    this.quantityInputEl.disabled = !variant?.available;
-    if (!variant?.available) this.quantityInputEl.value = 0;
+    if (!variant) {
+      this.quantityInputEl.disabled = true;
+      this.quantityInputEl.value = 0;
+    } else {
+      this.quantityInputEl.disabled = !variant.available;
+      this.quantityInputEl.value = 1;
+      this.quantityInputEl.max = variant.available ? 900 : 0;
+    }
   }
 
   updatePriceDisplay(variant) {
     if (!this.priceLabeEl || !this.comparePriceEl) return;
 
-    if (variant) {
-      const price = formatCurrency(variant.price ?? 0, 'PHP');
-      const compareAtPrice = formatCurrency(variant.compare_at_price ?? 0, 'PHP');
-      this.priceLabeEl.textContent = price;
-      this.comparePriceEl.textContent = compareAtPrice;
+    if (!variant) {
+      this.priceLabeEl.textContent = '';
+      this.comparePriceEl.textContent = '';
+      return;
     }
+
+    this.priceLabeEl.textContent =
+      variant.price !== null ? `$${(variant.price / 100).toFixed(2)}` : '';
+    this.comparePriceEl.textContent =
+      variant.compare_at_price !== null ? `$${(variant.compare_at_price / 100).toFixed(2)}` : '';
   }
 
   updateUrlVariant(variantId) {
-    const url = new URL(window.location.href);
+    const url = new URL(window.location);
     url.searchParams.set('variant', variantId);
-    window.history.replaceState({}, '', url.toString());
+    window.history.replaceState({}, '', url);
+  }
+
+  setSelectedOptionsByVariantId(variantId) {
+    const variant = this.variantsAtrrib.find((v) => v.id === variantId);
+    if (!variant) return;
+
+    const selectedOptions = variant.options.slice();
+
+    const matchedVariant = this.populateSelectsAndFindVariant(selectedOptions, {
+      setSelected: true,
+      disableIfIncomplete: false
+    });
+
+    if (matchedVariant) {
+      this.updateAvailability(matchedVariant);
+      this.updateQuantityInput(matchedVariant);
+      this.updatePriceDisplay(matchedVariant);
+
+      AppEvent.emit('product:variant:changed', { variantId: matchedVariant.id });
+      this.updateUrlVariant(matchedVariant.id);
+    }
+  }
+
+  populateSelectsAndFindVariant(
+    selectedOptions,
+    { setSelected = true, disableIfIncomplete = true } = {}
+  ) {
+    for (let i = 0; i < this.optionsAtrrib.length; i++) {
+      const prevSelections = selectedOptions.slice(0, i);
+      const select = this.querySelector(`#option-select-${i}`);
+      if (!select) continue;
+
+      const matchingVariants = this.variantsAtrrib.filter((v) =>
+        prevSelections.every((val, idx) => v.options[idx] === val)
+      );
+
+      const values = [...new Set(matchingVariants.map((v) => v.options[i]))];
+
+      select.innerHTML = '';
+
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- Select --';
+      placeholder.disabled = true;
+      select.appendChild(placeholder);
+
+      values.forEach((value) => {
+        const optionEl = document.createElement('option');
+        optionEl.value = value;
+        optionEl.textContent = value;
+        select.appendChild(optionEl);
+      });
+
+      if (disableIfIncomplete) {
+        const canEnable = prevSelections.every((v) => v !== null);
+        select.disabled = !canEnable;
+      } else {
+        select.disabled = false;
+      }
+
+      if (setSelected) {
+        const prevValue = selectedOptions[i];
+        if (values.includes(prevValue)) {
+          select.value = prevValue;
+        } else {
+          select.value = '';
+          selectedOptions[i] = null;
+        }
+      }
+    }
+
+    const isComplete = selectedOptions.every((v) => v !== null);
+    const matchedVariant = isComplete
+      ? this.variantsAtrrib.find((v) => v.options.every((opt, i) => opt === selectedOptions[i]))
+      : null;
+
+    return matchedVariant;
   }
 }
 
-customElements.define('test-product-variant-selector', TestProductVariantSelector);
+window.customElements.define('test-product-variant-selector', TestProductVariantSelector);

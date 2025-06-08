@@ -1,1 +1,43 @@
-<test-component-cart></test-component-cart>
+<test-component-cart>
+  {% comment %}
+    <template id='cart-item-template' style='display:none;'>
+      <div class='cart-item flex flex-col gap-4 border-b border-orange-400 px-2 py-4 md:flex-row md:items-center'>
+        <div class='item-info flex flex-1 items-start gap-4 px-2'>
+          <a href='#'>
+            <img
+              src=''
+              alt=''
+              loading='lazy'
+              decoding='async'
+              class='h-20 w-20 rounded object-cover shadow-sm'
+            >
+          </a>
+          <div class='item-details flex flex-col'>
+            <a href='#' class='name text-base font-medium text-inherit no-underline'></a>
+            <span class='text-sm text-gray-500'>Variant: <span class='variant'></span></span>
+            <span class='price text-sm text-gray-500'></span>
+          </div>
+        </div>
+        <div class='quantity flex w-full justify-center px-2 md:w-28'>
+          <input
+            type='number'
+            value='1'
+            min='1'
+            class='qty-input w-full rounded border border-gray-300 p-2 outline-none'
+          >
+        </div>
+        <div class='total flex w-full justify-start px-2 md:w-20'>
+          <span class='total'></span>
+        </div>
+        <div class='remove flex w-12 justify-start px-2'>
+          <a
+            href='#'
+            class='remove-btn cursor-pointer text-xl font-bold text-red-500 no-underline hover:text-red-700'
+            title='Remove item'
+            >&times;</a
+          >
+        </div>
+      </div>
+    </template>
+  {% endcomment %}
+</test-component-cart>
